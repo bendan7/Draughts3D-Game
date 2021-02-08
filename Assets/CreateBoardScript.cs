@@ -12,8 +12,12 @@ public class CreateBoardScript : MonoBehaviour
     private int _boardSize = 8 ;
     public GameObject Cell;
     public GameObject GamePiecePrefab;
-    public Material black;
-    public Material white;
+
+    public Material BlackMat;
+    public Material WhiteMat;
+
+    public Material SelectedBlack;
+    public Material SelectedWhite;
 
     private GameObject _board;
     private GameObject _gamePieces;
@@ -58,22 +62,21 @@ public class CreateBoardScript : MonoBehaviour
                     {
                         Debug.Log("!");
                     }
-                    cell.GetComponentInChildren<MeshRenderer>().material = black;
+                    cell.GetComponentInChildren<MeshRenderer>().material = BlackMat;
                 }
                 else
                 {
-                    cell.GetComponentInChildren<MeshRenderer>().material = white;
+                    cell.GetComponentInChildren<MeshRenderer>().material = WhiteMat;
                 }
 
                 
                 if (i < 3 && isBlackCell)
                 {
-                    AddPiece(white,j,i);
+                    AddPiece(WhiteMat,j,i);
                 }
                 else if (i > 4 && isBlackCell)
                 {
-                    Debug.Log("!");
-                    AddPiece(black,  j,i);
+                    AddPiece(BlackMat,  j,i);
                 }
 
 
@@ -89,9 +92,11 @@ public class CreateBoardScript : MonoBehaviour
     {
         var GamePiece = Instantiate(GamePiecePrefab, _gamePieces.transform);
         GamePiece.name = $"{j}:{i} - {color.name}";
-        GamePiece.transform.position = new Vector3(i, 0.1f, j);
+        GamePiece.transform.position = new Vector3(i, 0, j);
         GamePiece.GetComponentInChildren<MeshRenderer>().material = color;
 
-        
+
+        var selectedMat = color == WhiteMat ? SelectedWhite : SelectedBlack;
+        GamePiece.GetComponent<GamePiece>().SelectedMaterial = selectedMat;
     }
 }
