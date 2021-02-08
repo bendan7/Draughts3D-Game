@@ -72,11 +72,11 @@ public class CreateBoardScript : MonoBehaviour
                 
                 if (i < 3 && isBlackCell)
                 {
-                    AddPiece(WhiteMat,j,i);
+                    AddPiece(PlayerColor.White, j,i);
                 }
                 else if (i > 4 && isBlackCell)
                 {
-                    AddPiece(BlackMat,  j,i);
+                    AddPiece(PlayerColor.Black,  j,i);
                 }
 
 
@@ -88,15 +88,19 @@ public class CreateBoardScript : MonoBehaviour
         _board.transform.position =new  Vector3(0, -0.05f, 0);
     }
 
-    private void AddPiece(Material color, int i, int j)
+    private void AddPiece(PlayerColor color, int i, int j)
     {
+
         var GamePiece = Instantiate(GamePiecePrefab, _gamePieces.transform);
-        GamePiece.name = $"{j}:{i} - {color.name}";
+        GamePiece.name = $"{j}:{i} - {color}";
         GamePiece.transform.position = new Vector3(i, 0, j);
-        GamePiece.GetComponentInChildren<MeshRenderer>().material = color;
+        GamePiece.GetComponentInChildren<MeshRenderer>().material = color == PlayerColor.White ? WhiteMat :BlackMat;
 
 
-        var selectedMat = color == WhiteMat ? SelectedWhite : SelectedBlack;
-        GamePiece.GetComponent<GamePiece>().SelectedMaterial = selectedMat;
+        var selectedMat = color == PlayerColor.White ? SelectedWhite : SelectedBlack;
+        var GamePieceScript = GamePiece.GetComponent<GamePiece>();
+
+        GamePieceScript.SelectedMaterial = selectedMat;
+        GamePieceScript.Color = color;
     }
 }

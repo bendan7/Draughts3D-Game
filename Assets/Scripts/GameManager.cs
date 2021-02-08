@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     GamePiece _selectedGP = null;
+    PlayerColor activePlayer = PlayerColor.White;
 
     void Start()
     {
@@ -26,11 +27,19 @@ public class GameManager : MonoBehaviour
             {
                 if (hit.collider.gameObject.transform.parent.tag == "GamePiece")
                 {
-                    _selectedGP?.OnDeselect();
-                    var gamePiece = hit.collider.gameObject.transform.parent.gameObject;
 
-                    _selectedGP = gamePiece.GetComponentInChildren<GamePiece>();
-                    _selectedGP.OnSelected();
+
+
+                    var gamePiece = hit.collider.gameObject.transform.parent.gameObject.GetComponentInChildren<GamePiece>();
+
+                    if(gamePiece.Color == activePlayer)
+                    {
+                        _selectedGP?.OnDeselect();
+                        _selectedGP = gamePiece;
+                        _selectedGP.OnSelected();
+                    }
+
+   
                 }
             }
         }

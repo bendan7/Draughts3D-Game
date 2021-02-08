@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class GamePiece : MonoBehaviour
 {
-    
-    public Material SelectedMaterial;
 
+    public Material SelectedMaterial;
+    public PlayerColor Color;
 
     Rigidbody _rb;
     Material _initMatrial;
     MeshRenderer _meshRenderer;
+
+
+     
 
 
     void Awake()
