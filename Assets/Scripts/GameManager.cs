@@ -19,8 +19,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
 
-        Destroy(GameObject.Find("Board"));
-        Destroy(GameObject.Find("GamePieces"));
+        //DestroyImmediate(GameObject.Find("Board"));
+        //DestroyImmediate(GameObject.Find("GamePieces"));
 
         _boardBuilder = GetComponent<CreateBoardScript>();
         (_board, _gamePieces) = _boardBuilder.BuildNewGameBoard();

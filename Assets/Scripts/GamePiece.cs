@@ -11,22 +11,19 @@ public class GamePiece : MonoBehaviour
     public int Row;
     public int Col;
 
-    Rigidbody _rb;
-    Material _initMatrial;
-    MeshRenderer _meshRenderer;
+    private Material _initMatrial;
+    private MeshRenderer _meshRenderer;
+    private Animation _animation;
 
 
-    
+
     void Awake()
     {
-        _rb = GetComponentInChildren<Rigidbody>();
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
         _initMatrial = _meshRenderer.material;
+        _animation = GetComponentInChildren<Animation>();
 
-        if (_rb == null)
-        {
-            Debug.LogError("Rigidbody no found");
-        }
+        
 
         if (_initMatrial == null)
         {
@@ -38,7 +35,7 @@ public class GamePiece : MonoBehaviour
 
     public (int row, int col) OnSelected()
     {
-        _rb.AddForce(0, 100, 0);
+        _animation.Play();
         _meshRenderer.material = SelectedMaterial;
         return (Row, Col);
     }

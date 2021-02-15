@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5325421650902562019}
   - component: {fileID: 1002772653412557042}
   - component: {fileID: 2424160436787838569}
-  - component: {fileID: 4827065195996034856}
   - component: {fileID: 4770713155100951892}
+  - component: {fileID: 2183817533715152102}
   m_Layer: 0
   m_Name: Cylinder
   m_TagString: Untagged
@@ -81,22 +81,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!54 &4827065195996034856
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6029590885182966295}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!65 &4770713155100951892
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -110,6 +94,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 2.0000002, z: 1.0000001}
   m_Center: {x: 0.00000005960464, y: 0, z: -0.00000008940696}
+--- !u!111 &2183817533715152102
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6029590885182966295}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 33fa11240f948495c89c8a5f6cace30e, type: 2}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!1 &6636323526216366341
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,3 +154,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SelectedMaterial: {fileID: 2100000, guid: 6854e580df809471f9043e1e710ed66f, type: 2}
+  PieceColor: 0
+  Row: 0
+  Col: 0
