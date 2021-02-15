@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-[ExecuteInEditMode]
 public class CreateBoardScript : MonoBehaviour
 {
-    private int _boardSize = 8 ;
-    public GameObject Cell;
+    public int BoardSize = 8;
+    public GameObject Square;
     public GameObject GamePiecePrefab;
 
     public Material BlackMat;
@@ -23,60 +22,49 @@ public class CreateBoardScript : MonoBehaviour
     private GameObject _gamePieces;
 
 
-
-    private void OnEnable()
-    {
-        _board = GameObject.Find("Board");
-
-
-        if(_board == null)
-        {
-            BuildNewGameBoard();
-        }
-
-    }
-
-
-    void BuildNewGameBoard() {
+    public (Square[,], GamePiece[,]) BuildNewGameBoard() {
 
         _board = new GameObject("Board");
         _gamePieces = new GameObject("GamePieces");
 
+        Square[,] boardArr = new Square[BoardSize, BoardSize];
+        GamePiece[,] gamePiecesArr = new GamePiece[BoardSize, BoardSize];
+
 
         bool isBlackCell = false;
 
-        for (int i = 0; i < _boardSize; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             isBlackCell = !isBlackCell;
 
-            for (int j = 0; j < _boardSize; j++)
+            for (int j = 0; j < BoardSize; j++)
             {
-                var cell = Instantiate(Cell, _board.transform);
+                var square = Instantiate(Square, _board.transform);
 
-                cell.name = $"{i}:{j}";
-                cell.transform.position = new Vector3(j, 0, i);
+                boardArr[i,j] = square.GetComponent<Square>();
+                square.name = $"{i}:{j}";
+                square.transform.position = new Vector3(j, 0, i);
 
                 if (isBlackCell)
                 {
-                    if(i == 0 && j == 0)
-                    {
-                        Debug.Log("!");
-                    }
-                    cell.GetComponentInChildren<MeshRenderer>().material = BlackMat;
+
+                    square.GetComponentInChildren<MeshRenderer>().material = BlackMat;
                 }
                 else
                 {
-                    cell.GetComponentInChildren<MeshRenderer>().material = WhiteMat;
+                    square.GetComponentInChildren<MeshRenderer>().material = WhiteMat;
                 }
 
-                
+
                 if (i < 3 && isBlackCell)
                 {
-                    AddPiece(PlayerColor.White, j,i);
+                    var gamePiece = AddPiece(PlayerColor.White, j,i);
+                    gamePiecesArr[i, j] = gamePiece;
                 }
                 else if (i > 4 && isBlackCell)
                 {
-                    AddPiece(PlayerColor.Black,  j,i);
+                    var gamePiece = AddPiece(PlayerColor.Black,  j,i);
+                    gamePiecesArr[i, j] = gamePiece;
                 }
 
 
@@ -86,9 +74,12 @@ public class CreateBoardScript : MonoBehaviour
 
 
         _board.transform.position =new  Vector3(0, -0.05f, 0);
+
+        
+        return (boardArr, gamePiecesArr);
     }
 
-    private void AddPiece(PlayerColor color, int i, int j)
+    private GamePiece AddPiece(PlayerColor color, int i, int j)
     {
 
         var GamePiece = Instantiate(GamePiecePrefab, _gamePieces.transform);
@@ -101,6 +92,11 @@ public class CreateBoardScript : MonoBehaviour
         var GamePieceScript = GamePiece.GetComponent<GamePiece>();
 
         GamePieceScript.SelectedMaterial = selectedMat;
-        GamePieceScript.Color = color;
+        GamePieceScript.PieceColor = color;
+
+        GamePieceScript.Row = j;
+        GamePieceScript.Col = i;
+
+        return GamePieceScript;
     }
 }

@@ -6,16 +6,17 @@ public class GamePiece : MonoBehaviour
 {
 
     public Material SelectedMaterial;
-    public PlayerColor Color;
+    public PlayerColor PieceColor;
+
+    public int Row;
+    public int Col;
 
     Rigidbody _rb;
     Material _initMatrial;
     MeshRenderer _meshRenderer;
 
 
-     
-
-
+    
     void Awake()
     {
         _rb = GetComponentInChildren<Rigidbody>();
@@ -34,17 +35,12 @@ public class GamePiece : MonoBehaviour
     }
 
 
-    private void FixedUpdate()
-    {
 
-        
-    }
-
-
-    public void OnSelected()
+    public (int row, int col) OnSelected()
     {
         _rb.AddForce(0, 100, 0);
         _meshRenderer.material = SelectedMaterial;
+        return (Row, Col);
     }
 
     public void OnDeselect()

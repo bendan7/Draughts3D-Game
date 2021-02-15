@@ -1,18 +1,30 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    GamePiece _selectedGP = null;
+
+    private CreateBoardScript _boardBuilder;
+
+    private Square[,] _board;
+    private GamePiece[,] _gamePieces;
+
+    private GamePiece _selectedGP = null;
+    private Square[] _moveableOptions = new Square[2];
+
     PlayerColor activePlayer = PlayerColor.White;
 
-    void Start()
+    private void Awake()
     {
-        
+
+        Destroy(GameObject.Find("Board"));
+        Destroy(GameObject.Find("GamePieces"));
+
+        _boardBuilder = GetComponent<CreateBoardScript>();
+        (_board, _gamePieces) = _boardBuilder.BuildNewGameBoard();
     }
-
-
 
 
     void Update()
@@ -27,22 +39,72 @@ public class GameManager : MonoBehaviour
             {
                 if (hit.collider.gameObject.transform.parent.tag == "GamePiece")
                 {
-
-
-
-                    var gamePiece = hit.collider.gameObject.transform.parent.gameObject.GetComponentInChildren<GamePiece>();
-
-                    if(gamePiece.Color == activePlayer)
-                    {
-                        _selectedGP?.OnDeselect();
-                        _selectedGP = gamePiece;
-                        _selectedGP.OnSelected();
-                    }
-
-   
+                    GamePieceSelected(hit);
                 }
+
+
             }
         }
+
+    }
+
+    private void GamePieceSelected(RaycastHit hit)
+    {
+        var gamePiece = hit.collider.gameObject.transform.parent.GetComponent<GamePiece>();
+
+        if (gamePiece.PieceColor == activePlayer)
+        {
+            _selectedGP?.OnDeselect();
+            _selectedGP = gamePiece;
+
+            (int row, int col) = _selectedGP.OnSelected();
+
+            MarkMoveableSquaresByGPPostion(row, col);
+        }
+    }
+
+    private void MarkMoveableSquaresByGPPostion(int row, int col)
+    {
+        //Deselect previous squres
+        foreach(var move in _moveableOptions)
+        {
+            if(move !=null)
+            {
+                move.SetAsOptionalMove(false);
+            }
+            
+        }
+
+
+        if(activePlayer == PlayerColor.White)
+        {
+
+            if (col + 1 < _boardBuilder.BoardSize &&
+                _gamePieces[row + 1, col + 1] == null)
+            {
+                _board[row + 1, col + 1].SetAsOptionalMove(true);
+                _moveableOptions[0] = _board[row + 1, col + 1];
+            }
+            else
+            {
+                _moveableOptions[0] = null;
+            }
+
+
+            if (col - 1 >= 0 &&
+                _gamePieces[row + 1, col - 1] == null)
+            {
+                _board[row + 1, col - 1].SetAsOptionalMove(true);
+                _moveableOptions[1] = _board[row + 1, col - 1];
+            }
+            else
+            {
+                _moveableOptions[1] = null;
+            }
+
+        }
+
+       
 
     }
 }
