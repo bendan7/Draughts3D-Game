@@ -104,7 +104,8 @@ Animation:
   m_Enabled: 1
   serializedVersion: 3
   m_Animation: {fileID: 7400000, guid: 33fa11240f948495c89c8a5f6cace30e, type: 2}
-  m_Animations: []
+  m_Animations:
+  - {fileID: 7400000, guid: 33fa11240f948495c89c8a5f6cace30e, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
@@ -119,6 +120,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3884083993796580517}
   - component: {fileID: 6776420281245120275}
+  - component: {fileID: 4630676819185059685}
   m_Layer: 0
   m_Name: GamePiece
   m_TagString: GamePiece
@@ -157,3 +159,17 @@ MonoBehaviour:
   PieceColor: 0
   Row: 0
   Col: 0
+--- !u!114 &4630676819185059685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6636323526216366341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77f6b956322334855aec5d22a4d5f2f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  journeyTime: 1
+  speed: 1

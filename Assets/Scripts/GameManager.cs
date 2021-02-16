@@ -26,6 +26,21 @@ public class GameManager : MonoBehaviour
         (_board, _gamePieces) = _boardBuilder.BuildNewGameBoard();
     }
 
+    private void Start()
+    {
+        
+
+        MoveGamePieceToPos(_gamePieces[0, 0], 3, 3);
+    }
+
+    private void MoveGamePieceToPos(GamePiece gamePiece, int x, int z)
+    {
+        _gamePieces[0, 0].MoveToPos(3, 3);
+
+        var gp = _gamePieces[0, 0];
+        _gamePieces[0, 0] = null;
+        _gamePieces[x, z] = gp;
+    }
 
     void Update()
     {

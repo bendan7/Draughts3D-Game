@@ -1,29 +1,34 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(GamePieceMover))]
 public class GamePiece : MonoBehaviour
 {
 
+    [HideInInspector]
     public Material SelectedMaterial;
+
+    [HideInInspector]
     public PlayerColor PieceColor;
 
+    [HideInInspector]
     public int Row;
+
+    [HideInInspector]
     public int Col;
 
     private Material _initMatrial;
     private MeshRenderer _meshRenderer;
-    private Animation _animation;
-
-
+    private GamePieceMover _move;
 
     void Awake()
     {
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
         _initMatrial = _meshRenderer.material;
-        _animation = GetComponentInChildren<Animation>();
-
         
+        _move = GetComponent<GamePieceMover>();
 
         if (_initMatrial == null)
         {
@@ -31,11 +36,17 @@ public class GamePiece : MonoBehaviour
         }
     }
 
-
+    public void MoveToPos(int x, int z)
+    {
+        _move.MoveTo(x, z);
+        Row = x;
+        Col = z;
+    }
 
     public (int row, int col) OnSelected()
     {
-        _animation.Play();
+        _move.Pop();
+
         _meshRenderer.material = SelectedMaterial;
         return (Row, Col);
     }
@@ -44,6 +55,9 @@ public class GamePiece : MonoBehaviour
     {
         _meshRenderer.material = _initMatrial;
     }
+
+
+    
 
 
 
