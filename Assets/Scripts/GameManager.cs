@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     private List<Square> _moveableSquares = new List<Square>();
     private List<GamePiece> _eatablePieces = new List<GamePiece>();
 
-    PlayerColor _activePlayer = PlayerColor.Black;
+    PlayerColor _activePlayer = PlayerColor.White;
     GameState _gameState = GameState.WaitForAction;
 
     private void Awake()
@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
 
     private async Task MoveGamePieceToSquareAsync(GamePiece gamePiece, Square square)
     {
+
         _gameState = GameState.PiecesMoving;
 
         var startPos = gamePiece.GetPostion();
@@ -51,12 +52,12 @@ public class GameManager : MonoBehaviour
 
         Task move = gamePiece.MoveToPos(square.Col, square.Row);
 
-        
         if (eatenPiece)
         {
-            _eatablePieces.Remove(eatenPiece);
-        }
 
+            _eatablePieces.Remove(eatenPiece);
+
+        }
 
         // Update the new postion in the game pieces 2d array
         _gamePieces[(int)startPos.x, (int)startPos.y] = null;
@@ -68,7 +69,7 @@ public class GameManager : MonoBehaviour
 
         if (eatenPiece)
         {
-            Debug.Log($"eated: {eatenPiece.name}");
+            Debug.Log($"{eatenPiece.name} been eat");
             Destroy(eatenPiece.gameObject);
         }
 
@@ -94,77 +95,26 @@ public class GameManager : MonoBehaviour
  
     }
 
-    private void AutoPlay()
-    {
-        Debug.Log("Computer turn");
-
-        /*
-        foreach (GamePiece piece in _opponentPieces)
-        {
-
-            Square square = IsCanEat(piece);
-
-            if (square)
-            {
-                piece.Select();
-                _ = MoveGamePieceToSquareAsync(piece, square);
-                return;
-            }
-        }
-
-        foreach (GamePiece piece in _opponentPieces)
-        {
-
-            Square square = IsCanMove(piece);
-
-            if (square)
-            {
-                piece.Select();
-                _ = MoveGamePieceToSquareAsync(piece, square);
-                return;
-            }
-        }
-        */
-
-    }
-
     private GamePiece TryGetEatenPiece(GamePiece Eater, Square moveTo)
     {
 
-        foreach(var piece in _eatablePieces)
+        (var Add, var Sub , var GreaterThan) = GetSwapOperatorByColor(Eater.Color);
+
+        Debug.Log($"moveTo.Col  {moveTo.Col}");
+        Debug.Log($"Eater.Col + 1  {Eater.Col + 1}");
+
+        if (GreaterThan( moveTo.Col, Eater.Col + 1 ))
         {
 
-            if(_activePlayer == PlayerColor.White)
-            {
-                if (Eater.Col < moveTo.Col)
-                {
-                    // eat left
-                    return _gamePieces[Eater.Row + 1, Eater.Col + 1];
-                }
-                else
-                {
-                    return _gamePieces[Eater.Row + 1, Eater.Col - 1];
-
-                }
-            }
-            else
-            {
-
-                if (Eater.Col < moveTo.Col)
-                {
-                    return _gamePieces[Eater.Row - 1, Eater.Col + 1];
-                }
-                else
-                {
-                    return _gamePieces[Eater.Row - 1, Eater.Col - 1];
-
-                }
-            }
-
-
-
+            //Try eat right side from white perspective
+            return _gamePieces[Add(Eater.Row, 1), Add(Eater.Col, 1)];
         }
+        else if (GreaterThan( Eater.Col - 1, moveTo.Col))
+        {
 
+            // Try eat left side from white perspective
+            return _gamePieces[Add(Eater.Row, 1), Sub(Eater.Col, 1)];
+        }
 
         return null;
     }
@@ -223,7 +173,7 @@ public class GameManager : MonoBehaviour
             _selectedGP = newSelectedGamePiece;
             (int row, int col) = _selectedGP.Select();
 
-            (_moveableSquares,_eatablePieces) = GetOptinalMoves(_selectedGP);
+            (_moveableSquares,_eatablePieces) = GetPossibleMoves(_selectedGP);
             
 
             MarkSquares(_moveableSquares);
@@ -232,80 +182,59 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
-    private (List<Square>,List<GamePiece>) GetOptinalMoves(GamePiece selectedGP)
+    private (List<Square>,List<GamePiece>) GetPossibleMoves(GamePiece selectedGP)
     {
-
+        int boardSize = _boardBuilder.BoardSize;
         int col = selectedGP.Col;
         int row = selectedGP.Row;
 
-        Func<int, int, int> Add;
-        Func<int, int, int> Sub;
-
-        if (_activePlayer == PlayerColor.White)
-        {
-            Add = (x, y) => { return x + y; };
-            Sub = (x, y) => { return x - y; };
-        }
-        else
-        {
-            Add = (x, y) => { return x - y; };
-            Sub = (x, y) => { return x + y; };
-        }
-
-
         List<Square> moveableSquares = new List<Square>();
         List<GamePiece> eatablePieces = new List<GamePiece>();
-        var boardSize = _boardBuilder.BoardSize;
+
+        (var Add, var Sub, var GreaterThan) = GetSwapOperatorByColor(selectedGP.Color);
 
 
 
-        if (true)
+        //Right - move right from the white perspective
+        if (Add(col, 1) < boardSize && Add(col, 1) >= 0 &&
+            _gamePieces[Add(row, 1), Add(col, 1)] == null)
         {
 
-            if (Add(col, 1) < boardSize &&
-                _gamePieces[Add(row, 1), Add(col, 1)] == null)
-            {
+            moveableSquares.Add(_board[Add(row, 1), Add(col, 1)]);
+        }
+        else if (
+                Add(col, 2) < boardSize && Add(col, 2) >= 0 &&
+                _gamePieces[Add(row, 2), Add(col, 2)] == null &&
+                _gamePieces[Add(row, 1), Add(col, 1)].Color != selectedGP.Color)
+        {
 
-                moveableSquares.Add(_board[Add(row, 1), Add(col, 1)]);
-
-
-            }
-            else if (
-                 Add(col, 2) < boardSize &&
-                 _gamePieces[Add(row, 2), Add(col, 2)] == null &&
-                 _gamePieces[Add(row, 1), Add(col, 1)].Color != selectedGP.Color)
-            {
-
-                eatablePieces.Add(_gamePieces[Add(row, 1), Add(col, 1)]);
-                moveableSquares.Add(_board[Add(row, 2), Add(col, 2)]);
-            }
-
-
-
-            if (Sub(col, 1) >= 0 && Sub(col, 1) < boardSize &&
-                _gamePieces[Add(row, 1), Sub(col, 1)] == null)
-            {
-                moveableSquares.Add(_board[Add(row, 1), Sub(col, 1)]);
-            }
-            else if (
-                Sub(col, 2) >= 0 && Sub(col, 2) < boardSize &&
-                _gamePieces[Add(row, 2), Sub(col, 2)] == null &&
-                _gamePieces[Add(row, 1), Sub(col, 1)].Color != selectedGP.Color)
-            {
-                moveableSquares.Add(_board[Add(row, 2), Sub(col, 2)]);
-                eatablePieces.Add(_gamePieces[Add(row, 1), Sub(col, 1)]);
-            }
+            eatablePieces.Add(_gamePieces[Add(row, 1), Add(col, 1)]);
+            moveableSquares.Add(_board[Add(row, 2), Add(col, 2)]);
         }
 
 
+        //Left - move left from the white perspective
+        if (Sub(col, 1) >= 0 &&
+            Sub(col, 1) < boardSize &&
+            _gamePieces[Add(row, 1), Sub(col, 1)] == null)
+        {
+
+            moveableSquares.Add(_board[Add(row, 1), Sub(col, 1)]);
+        }
+
+        else if (
+            Sub(col, 2) >= 0 && Sub(col, 2) < boardSize &&
+            _gamePieces[Add(row, 2), Sub(col, 2)] == null &&
+            _gamePieces[Add(row, 1), Sub(col, 1)].Color != selectedGP.Color)
+        {
+
+            moveableSquares.Add(_board[Add(row, 2), Sub(col, 2)]);
+            eatablePieces.Add(_gamePieces[Add(row, 1), Sub(col, 1)]);
+        }
+  
 
         return (moveableSquares,eatablePieces);
     }
-
-
-
 
     private void MarkEatablePieces(List<GamePiece> eatablePieces)
     {
@@ -339,65 +268,63 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
-    /*
-
-    private void MarkMoveableSquaresByGPPostion(int row, int col)
+    private void AutoPlay()
     {
+        Debug.Log("Computer turn");
 
-        List<Square> moveableSquares = new List<Square>();
-        List<GamePiece> eatablePieces = new List<GamePiece>();
-        var boardSize = _boardBuilder.BoardSize;
-
-
-        if (_activePlayer == PlayerColor.White)
+        /*
+        foreach (GamePiece piece in _opponentPieces)
         {
 
-            if (col + 1 < boardSize &&
-                _gamePieces[row + 1, col + 1] == null)
+            Square square = IsCanEat(piece);
+
+            if (square)
             {
-
-                moveableSquares.Add(_board[row + 1, col + 1]);
-
-               
-            } else if(
-                   col + 2 < boardSize &&
-                   _gamePieces[row + 2, col + 2] == null &&
-                   _gamePieces[row + 1, col + 1].Color == PlayerColor.Black)
-            {
-
-                eatablePieces.Add(_gamePieces[row + 1, col + 1]);
-                moveableSquares.Add(_board[row + 2, col + 2]);
-            }
-
-
-
-
-            if (col - 1 >= 0 &&
-                _gamePieces[row + 1, col - 1] == null)
-            {
-                moveableSquares.Add(_board[row + 1, col - 1]);
-            }
-            else if(
-                col - 2 >= 0 &&
-                _gamePieces[row + 2, col - 2] == null &&
-                _gamePieces[row + 1, col - 1].Color == PlayerColor.Black)
-            {
-                moveableSquares.Add(_board[row + 2, col - 2]);
-                eatablePieces.Add(_gamePieces[row + 1, col - 1]);
+                piece.Select();
+                _ = MoveGamePieceToSquareAsync(piece, square);
+                return;
             }
         }
 
+        foreach (GamePiece piece in _opponentPieces)
+        {
 
+            Square square = IsCanMove(piece);
 
-
-
-        _moveableSquares = moveableSquares;
-        _eatablePieces = eatablePieces;
+            if (square)
+            {
+                piece.Select();
+                _ = MoveGamePieceToSquareAsync(piece, square);
+                return;
+            }
+        }
+        */
 
     }
 
-    */
+    private (Func<int, int, int>, Func<int, int, int>, Func<int, int, bool>)
+        GetSwapOperatorByColor(PlayerColor playerColor)
+    {
+
+        Func<int, int, int> add;
+        Func<int, int, int> sub;
+        Func<int, int, bool> GreaterThan;
+
+        if (_activePlayer == PlayerColor.White)
+        {
+            add = (x, y) => { return x + y; };
+            sub = (x, y) => { return x - y; };
+            GreaterThan = (x, y) => { return x > y; };
+        }
+        else
+        {
+            add = (x, y) => { return x - y; };
+            sub = (x, y) => { return x + y; };
+            GreaterThan = (x, y) => { return x < y; };
+        }
+
+        return (add,sub, GreaterThan);
+    }
+
 }
 
