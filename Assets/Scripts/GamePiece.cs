@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(GamePieceMover))]
@@ -8,7 +9,7 @@ using UnityEngine;
 public class GamePiece : MonoBehaviour
 {
     [HideInInspector]
-    public PlayerColor PieceColor;
+    public PlayerColor Color;
 
     [HideInInspector]
     public Material SelectedMaterial;
@@ -32,11 +33,11 @@ public class GamePiece : MonoBehaviour
 
     }
 
-    public void MoveToPos(int col, int row)
+    public Task MoveToPos(int col, int row)
     {
-        _gamePieceMover.MoveTo(col, row);
         Row = row;
         Col = col;
+        return _gamePieceMover.MoveTo(col, row);
     }
 
     public (int row, int col) Select()

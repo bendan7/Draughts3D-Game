@@ -101,7 +101,7 @@ public class GameBoardCreator : MonoBehaviour
 
         GamePieceScript.SelectedMaterial = selectedMat;
         GamePieceScript.Eatable = Eatable;
-        GamePieceScript.PieceColor = color;
+        GamePieceScript.Color = color;
 
         GamePieceScript.Row = j;
         GamePieceScript.Col = i;
