@@ -40,10 +40,14 @@ public class CreateBoardScript : MonoBehaviour
             for (int j = 0; j < BoardSize; j++)
             {
                 var square = Instantiate(Square, _board.transform);
-
-                boardArr[i,j] = square.GetComponent<Square>();
                 square.name = $"{i}:{j}";
                 square.transform.position = new Vector3(j, 0, i);
+
+                var squareScript = square.GetComponent<Square>();
+                squareScript.Row = i;
+                squareScript.Col = j;
+                boardArr[i,j] = squareScript;
+
 
                 if (isBlackCell)
                 {

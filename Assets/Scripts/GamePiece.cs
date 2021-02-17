@@ -12,23 +12,21 @@ public class GamePiece : MonoBehaviour
 
     [HideInInspector]
     public PlayerColor PieceColor;
-
-    [HideInInspector]
+  
     public int Row;
 
-    [HideInInspector]
     public int Col;
 
     private Material _initMatrial;
     private MeshRenderer _meshRenderer;
-    private GamePieceMover _move;
+    private GamePieceMover _gamePieceMover;
 
     void Awake()
     {
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
         _initMatrial = _meshRenderer.material;
         
-        _move = GetComponent<GamePieceMover>();
+        _gamePieceMover = GetComponent<GamePieceMover>();
 
         if (_initMatrial == null)
         {
@@ -36,29 +34,31 @@ public class GamePiece : MonoBehaviour
         }
     }
 
-    public void MoveToPos(int x, int z)
+    public void MoveToPos(int col, int row)
     {
-        _move.MoveTo(x, z);
-        Row = x;
-        Col = z;
+        _gamePieceMover.MoveTo(col, row);
+        Row = row;
+        Col = col;
     }
 
-    public (int row, int col) OnSelected()
+    public (int row, int col) Select()
     {
-        _move.Pop();
+
+        _gamePieceMover.Pop();
 
         _meshRenderer.material = SelectedMaterial;
+
         return (Row, Col);
     }
 
-    public void OnDeselect()
+    public void Deselect()
     {
         _meshRenderer.material = _initMatrial;
     }
 
-
-    
-
-
+    public Vector2 GetPostion()
+    {
+        return new Vector2(Row, Col);
+    }
 
 }

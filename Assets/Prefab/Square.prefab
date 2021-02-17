@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 3220796696796296541}
   m_Layer: 0
   m_Name: Square
-  m_TagString: Untagged
+  m_TagString: Square
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -139,3 +139,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Row: 0
   Col: 0
+  _originalColor: {r: 0, g: 0, b: 0, a: 0}

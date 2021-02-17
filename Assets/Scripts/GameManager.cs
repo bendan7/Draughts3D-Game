@@ -12,41 +12,38 @@ public class GameManager : MonoBehaviour
     private GamePiece[,] _gamePieces;
 
     private GamePiece _selectedGP = null;
-    private Square[] _moveableOptions = new Square[2];
+
+    private List<Square> _moveableSquares = new List<Square>();
 
     PlayerColor activePlayer = PlayerColor.White;
 
     private void Awake()
     {
 
-        //DestroyImmediate(GameObject.Find("Board"));
-        //DestroyImmediate(GameObject.Find("GamePieces"));
-
         _boardBuilder = GetComponent<CreateBoardScript>();
         (_board, _gamePieces) = _boardBuilder.BuildNewGameBoard();
     }
 
-    private void Start()
+
+
+    private void MoveGamePieceToSquare(GamePiece gamePiece, Square square)
     {
-        
+        var startPos = gamePiece.GetPostion();
 
-        MoveGamePieceToPos(_gamePieces[0, 0], 3, 3);
-    }
+        gamePiece.MoveToPos(square.Col,square.Row );
 
-    private void MoveGamePieceToPos(GamePiece gamePiece, int x, int z)
-    {
-        _gamePieces[0, 0].MoveToPos(3, 3);
+        // Update the new postion in the game pieces 2d array
+        _gamePieces[(int)startPos.x, (int)startPos.y] = null;
+        _gamePieces[square.Row, square.Col] = gamePiece;
 
-        var gp = _gamePieces[0, 0];
-        _gamePieces[0, 0] = null;
-        _gamePieces[x, z] = gp;
+        GamePieceDeselect();
     }
 
     void Update()
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            
+
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
@@ -57,69 +54,88 @@ public class GameManager : MonoBehaviour
                     GamePieceSelected(hit);
                 }
 
+                if (hit.collider.gameObject.transform.parent.tag == "Square")
+                {
+                    SquareSelected(hit);
+                }
+
+
 
             }
         }
 
+    }
+
+    private void SquareSelected(RaycastHit hit)
+    {
+        var selectedSquare = hit.transform.parent.GetComponent<Square>();
+
+        if (_moveableSquares.Contains(selectedSquare))
+        {
+
+            Debug.Log($"Move GP {_selectedGP.Row}:{_selectedGP.Col}  TO  {selectedSquare.Row}:{selectedSquare.Col}");   
+            MoveGamePieceToSquare(_selectedGP, selectedSquare);
+
+        }
+        
     }
 
     private void GamePieceSelected(RaycastHit hit)
     {
-        var gamePiece = hit.collider.gameObject.transform.parent.GetComponent<GamePiece>();
+        GamePieceDeselect();
 
-        if (gamePiece.PieceColor == activePlayer)
+        var newSelectedGamePiece = hit.transform.parent.GetComponent<GamePiece>();
+
+        if (newSelectedGamePiece.PieceColor == activePlayer)
         {
-            _selectedGP?.OnDeselect();
-            _selectedGP = gamePiece;
+            _selectedGP?.Deselect();
 
-            (int row, int col) = _selectedGP.OnSelected();
+            _selectedGP = newSelectedGamePiece;
 
-            MarkMoveableSquaresByGPPostion(row, col);
+            (int row, int col) = _selectedGP.Select();
+
+            _moveableSquares = MarkMoveableSquaresByGPPostion(row, col);
         }
     }
 
-    private void MarkMoveableSquaresByGPPostion(int row, int col)
+    private void GamePieceDeselect()
     {
-        //Deselect previous squres
-        foreach(var move in _moveableOptions)
+        _selectedGP?.Deselect();
+
+        foreach (Square optinalMoves in _moveableSquares)
         {
-            if(move !=null)
-            {
-                move.SetAsOptionalMove(false);
-            }
-            
+            optinalMoves.SetAsOptionalMove(false);
         }
+    }
 
+    private List<Square> MarkMoveableSquaresByGPPostion(int row, int col)
+    {
 
-        if(activePlayer == PlayerColor.White)
+        List<Square> moveableSquares = new List<Square>();
+      
+        if (activePlayer == PlayerColor.White)
         {
 
             if (col + 1 < _boardBuilder.BoardSize &&
                 _gamePieces[row + 1, col + 1] == null)
             {
-                _board[row + 1, col + 1].SetAsOptionalMove(true);
-                _moveableOptions[0] = _board[row + 1, col + 1];
-            }
-            else
-            {
-                _moveableOptions[0] = null;
-            }
 
+                moveableSquares.Add(_board[row + 1, col + 1]);
+                _board[row + 1, col + 1].SetAsOptionalMove(true);
+               
+            }
 
             if (col - 1 >= 0 &&
                 _gamePieces[row + 1, col - 1] == null)
             {
-                _board[row + 1, col - 1].SetAsOptionalMove(true);
-                _moveableOptions[1] = _board[row + 1, col - 1];
-            }
-            else
-            {
-                _moveableOptions[1] = null;
-            }
 
+                moveableSquares.Add(_board[row + 1, col - 1]);
+                _board[row + 1, col - 1].SetAsOptionalMove(true);
+
+            }
         }
 
-       
+        return moveableSquares;
 
     }
 }

@@ -34,11 +34,12 @@ public class GamePieceMover : MonoBehaviour
     {
         _startPos = transform.position;
         _endPos = new Vector3(x, 0, z);
-        _isMoving = true;
+        startTime = Time.time;
 
+        _isMoving = true;       
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (transform.position == _endPos)
         {
