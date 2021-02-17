@@ -4,15 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(GamePieceMover))]
+[RequireComponent(typeof(MeshRenderer))]
 public class GamePiece : MonoBehaviour
 {
+    [HideInInspector]
+    public PlayerColor PieceColor;
 
     [HideInInspector]
     public Material SelectedMaterial;
 
     [HideInInspector]
-    public PlayerColor PieceColor;
-  
+    public Material Eatable;
+
     public int Row;
 
     public int Col;
@@ -24,14 +27,9 @@ public class GamePiece : MonoBehaviour
     void Awake()
     {
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
-        _initMatrial = _meshRenderer.material;
-        
+        _initMatrial = _meshRenderer.material;   
         _gamePieceMover = GetComponent<GamePieceMover>();
 
-        if (_initMatrial == null)
-        {
-            Debug.LogError("Material no found");
-        }
     }
 
     public void MoveToPos(int col, int row)
@@ -54,6 +52,19 @@ public class GamePiece : MonoBehaviour
     public void Deselect()
     {
         _meshRenderer.material = _initMatrial;
+    }
+
+    public void SetAsEatable(bool isEatable)
+    {
+
+        if (isEatable)
+        {
+            _meshRenderer.material = Eatable;
+        }
+        else
+        {
+            _meshRenderer.material = _initMatrial;
+        }
     }
 
     public Vector2 GetPostion()

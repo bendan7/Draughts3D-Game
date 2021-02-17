@@ -19,7 +19,6 @@ public class GamePieceMover : MonoBehaviour
     private Animation _popAnimation;
     private bool _isMoving = false;
 
-
     private void Awake()
     {
         _popAnimation = GetComponentInChildren<Animation>();

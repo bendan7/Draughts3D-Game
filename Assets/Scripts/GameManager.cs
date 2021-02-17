@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(GameBoardCreator))]
 public class GameManager : MonoBehaviour
 {
 
-    private CreateBoardScript _boardBuilder;
+    private GameBoardCreator _boardBuilder;
 
     private Square[,] _board;
     private GamePiece[,] _gamePieces;
@@ -14,17 +15,23 @@ public class GameManager : MonoBehaviour
     private GamePiece _selectedGP = null;
 
     private List<Square> _moveableSquares = new List<Square>();
+    private List<GamePiece> _eatablePieces = new List<GamePiece>();
 
     PlayerColor activePlayer = PlayerColor.White;
 
     private void Awake()
     {
-
-        _boardBuilder = GetComponent<CreateBoardScript>();
+        _boardBuilder = GetComponent<GameBoardCreator>();
         (_board, _gamePieces) = _boardBuilder.BuildNewGameBoard();
     }
 
+    private void Start()
+    {
+        MoveGamePieceToSquare(_gamePieces[5, 1], _board[4, 2]);
+        MoveGamePieceToSquare(_gamePieces[5, 5], _board[4, 4]);
 
+        MoveGamePieceToSquare(_gamePieces[2, 2], _board[3, 3]);
+    }
 
     private void MoveGamePieceToSquare(GamePiece gamePiece, Square square)
     {
@@ -59,8 +66,6 @@ public class GameManager : MonoBehaviour
                     SquareSelected(hit);
                 }
 
-
-
             }
         }
 
@@ -94,7 +99,7 @@ public class GameManager : MonoBehaviour
 
             (int row, int col) = _selectedGP.Select();
 
-            _moveableSquares = MarkMoveableSquaresByGPPostion(row, col);
+            MarkMoveableSquaresByGPPostion(row, col);
         }
     }
 
@@ -106,36 +111,71 @@ public class GameManager : MonoBehaviour
         {
             optinalMoves.SetAsOptionalMove(false);
         }
+
+        foreach (GamePiece pieces in _eatablePieces)
+        {
+            pieces.SetAsEatable(false);
+        }
     }
 
-    private List<Square> MarkMoveableSquaresByGPPostion(int row, int col)
+    private void MarkMoveableSquaresByGPPostion(int row, int col)
     {
 
         List<Square> moveableSquares = new List<Square>();
-      
+        List<GamePiece> eatablePieces = new List<GamePiece>();
+        var boardSize = _boardBuilder.BoardSize;
+
+
         if (activePlayer == PlayerColor.White)
         {
 
-            if (col + 1 < _boardBuilder.BoardSize &&
+            if (col + 1 < boardSize &&
                 _gamePieces[row + 1, col + 1] == null)
             {
 
                 moveableSquares.Add(_board[row + 1, col + 1]);
-                _board[row + 1, col + 1].SetAsOptionalMove(true);
+
                
+            } else if(
+                   col + 2 < boardSize &&
+                   _gamePieces[row + 2, col + 2] == null &&
+                   _gamePieces[row + 1, col + 1].PieceColor == PlayerColor.Black)
+            {
+
+                eatablePieces.Add(_gamePieces[row + 1, col + 1]);
+                moveableSquares.Add(_board[row + 2, col + 2]);
             }
+
+
+
 
             if (col - 1 >= 0 &&
                 _gamePieces[row + 1, col - 1] == null)
             {
-
                 moveableSquares.Add(_board[row + 1, col - 1]);
-                _board[row + 1, col - 1].SetAsOptionalMove(true);
-
+            }
+            else if(
+                col - 2 >= 0 &&
+                _gamePieces[row + 2, col - 2] == null &&
+                _gamePieces[row + 1, col - 1].PieceColor == PlayerColor.Black)
+            {
+                moveableSquares.Add(_board[row + 2, col - 2]);
+                eatablePieces.Add(_gamePieces[row + 1, col - 1]);
             }
         }
 
-        return moveableSquares;
+        foreach(var moveable in moveableSquares)
+        {
+            moveable.SetAsOptionalMove(true);
+        }
+
+        foreach (var pieces in eatablePieces)
+        {
+            pieces.SetAsEatable(true);
+        }
+
+        _moveableSquares = moveableSquares;
+        _eatablePieces = eatablePieces;
 
     }
 }

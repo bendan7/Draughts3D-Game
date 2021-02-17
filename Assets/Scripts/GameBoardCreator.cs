@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-public class CreateBoardScript : MonoBehaviour
+public class GameBoardCreator : MonoBehaviour
 {
     public int BoardSize = 8;
     public GameObject Square;
@@ -17,6 +17,7 @@ public class CreateBoardScript : MonoBehaviour
 
     public Material SelectedBlack;
     public Material SelectedWhite;
+    public Material Eatable;
 
     private GameObject _board;
     private GameObject _gamePieces;
@@ -40,6 +41,7 @@ public class CreateBoardScript : MonoBehaviour
             for (int j = 0; j < BoardSize; j++)
             {
                 var square = Instantiate(Square, _board.transform);
+
                 square.name = $"{i}:{j}";
                 square.transform.position = new Vector3(j, 0, i);
 
@@ -72,6 +74,7 @@ public class CreateBoardScript : MonoBehaviour
                 }
 
 
+
                 isBlackCell = !isBlackCell;
             }
         }
@@ -87,6 +90,7 @@ public class CreateBoardScript : MonoBehaviour
     {
 
         var GamePiece = Instantiate(GamePiecePrefab, _gamePieces.transform);
+
         GamePiece.name = $"{j}:{i} - {color}";
         GamePiece.transform.position = new Vector3(i, 0, j);
         GamePiece.GetComponentInChildren<MeshRenderer>().material = color == PlayerColor.White ? WhiteMat :BlackMat;
@@ -96,10 +100,13 @@ public class CreateBoardScript : MonoBehaviour
         var GamePieceScript = GamePiece.GetComponent<GamePiece>();
 
         GamePieceScript.SelectedMaterial = selectedMat;
+        GamePieceScript.Eatable = Eatable;
         GamePieceScript.PieceColor = color;
 
         GamePieceScript.Row = j;
         GamePieceScript.Col = i;
+
+        GamePiece.SetActive(true);
 
         return GamePieceScript;
     }
