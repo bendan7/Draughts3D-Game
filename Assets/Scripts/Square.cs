@@ -7,15 +7,14 @@ public class Square : MonoBehaviour
     public int Row;
     public int Col;
 
+    [HideInInspector]
+    public Material SelectedMaterial;
 
-    public Color _originalColor;
-    private bool _isOptinalMove = false;
-
-
+    private Material _originalColor;
 
     private void Start()
     {
-        _originalColor = GetComponentInChildren<MeshRenderer>().material.color;
+        _originalColor = GetComponentInChildren<MeshRenderer>().material;
         
     }
 
@@ -24,14 +23,13 @@ public class Square : MonoBehaviour
     {
         if (isOptional)
         {
-            GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+            GetComponentInChildren<MeshRenderer>().material = SelectedMaterial;
         }
         else
         {
-            GetComponentInChildren<MeshRenderer>().material.color = _originalColor;
+            GetComponentInChildren<MeshRenderer>().material = _originalColor;
         }
-        
-        _isOptinalMove = isOptional;
+
     }
 
 
