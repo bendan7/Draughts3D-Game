@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2183817533715152102}
   m_Layer: 0
   m_Name: Cylinder
-  m_TagString: Untagged
+  m_TagString: GamePiece
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -155,8 +155,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b89d44cee3c16432bb0fc1c246034f93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Color: 0
   SelectedMaterial: {fileID: 2100000, guid: 6854e580df809471f9043e1e710ed66f, type: 2}
-  PieceColor: 0
+  Eatable: {fileID: 0}
   Row: 0
   Col: 0
 --- !u!114 &4630676819185059685

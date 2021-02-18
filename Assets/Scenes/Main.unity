@@ -20,13 +20,13 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
-  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
-  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  m_AmbientSkyColor: {r: 0.11311854, g: 0.33731344, b: 0.7735849, a: 1}
+  m_AmbientEquatorColor: {r: 0.9056604, g: 0.5596298, b: 0.85342926, a: 1}
+  m_AmbientGroundColor: {r: 0.9150943, g: 0.33236915, b: 0.33764273, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 1d274e639b4d24f79905d5357509eea7, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.0736584, g: 0.16157266, b: 0.4032283, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -51,7 +51,7 @@ LightmapSettings:
     m_IndirectOutputScale: 1
     m_AlbedoBoost: 1
     m_EnvironmentLightingMode: 0
-    m_EnableBakedLightmaps: 1
+    m_EnableBakedLightmaps: 0
     m_EnableRealtimeLightmaps: 0
   m_LightmapEditorSettings:
     serializedVersion: 12
@@ -97,7 +97,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: dff3cfb2154984cf0885afada05354c4,
+    type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
@@ -289,13 +290,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1419028729}
-  m_LocalRotation: {x: 0.1636904, y: -0, z: -0, w: 0.98651177}
-  m_LocalPosition: {x: 4.495, y: 2.38, z: -4.04}
+  m_LocalRotation: {x: 0.40887186, y: 0.26576486, z: -0.12145702, w: 0.8645467}
+  m_LocalPosition: {x: -0.33, y: 5.86, z: -1.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 18.842001, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 50.492, y: 34.486, z: 0.659}
 --- !u!1 &2121288042
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,7 +324,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2121288042}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5337edf393c34b09b0a9e94f1cdb126, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e464963f7ba94b118e9c5b8f7176df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   BoardSize: 8
@@ -334,6 +335,7 @@ MonoBehaviour:
   WhiteMat: {fileID: 2100000, guid: bb0edcda9de0f46348c74d2b57f35d0e, type: 2}
   SelectedBlack: {fileID: 2100000, guid: 066e8d83f26b9455a8d06c362856247a, type: 2}
   SelectedWhite: {fileID: 2100000, guid: 6854e580df809471f9043e1e710ed66f, type: 2}
+  Eatable: {fileID: 2100000, guid: 0304028d6bd0c47719617f9b08578633, type: 2}
 --- !u!4 &2121288044
 Transform:
   m_ObjectHideFlags: 0

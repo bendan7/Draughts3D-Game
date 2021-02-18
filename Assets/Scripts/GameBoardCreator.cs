@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
+[ExecuteInEditMode]
 public class GameBoardCreator : MonoBehaviour
 {
     public int BoardSize = 8;
@@ -22,8 +22,46 @@ public class GameBoardCreator : MonoBehaviour
     private GameObject _board;
     private GameObject _gamePieces;
 
+    private void OnEnable()
+    {
+        /*
+        var Board = GameObject.Find("Board");
+        var GamePieces = GameObject.Find("GamePieces");
+
+        if (Board && GamePieces)
+        {
+            DestroyImmediate(Board);
+            DestroyImmediate(GamePieces);
+        }
+
+
+        if (!Application.isPlaying )
+        {
+            Debug.Log("editor mode");
+            BuildNewGameBoard();
+        }
+        else
+        {
+
+            Debug.Log("play mode");
+            Board = GameObject.Find("Board");
+            GamePieces = GameObject.Find("GamePieces");
+
+            
+            if (Board && GamePieces)
+            {
+                DestroyImmediate(Board);
+                DestroyImmediate(GamePieces);
+            }
+        }
+        
+        */
+    }
+
 
     public (Square[,], GamePiece[,]) BuildNewGameBoard() {
+
+        Debug.Log("New Game Board");
 
         _board = new GameObject("Board");
         _gamePieces = new GameObject("GamePieces");

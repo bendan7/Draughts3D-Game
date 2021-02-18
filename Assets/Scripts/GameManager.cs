@@ -105,7 +105,6 @@ public class GameManager : MonoBehaviour
 
         if (GreaterThan( moveTo.Col, Eater.Col + 1 ))
         {
-
             //Try eat right side from white perspective
             return _gamePieces[Add(Eater.Row, 1), Add(Eater.Col, 1)];
         }
@@ -127,16 +126,19 @@ public class GameManager : MonoBehaviour
 
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-
+            Debug.Log("1");
             if (Physics.Raycast(ray, out hit))
             {
+                Debug.Log("2");
                 if (hit.collider.gameObject.transform.parent.tag == "GamePiece")
                 {
+                    Debug.Log("3");
                     GamePieceSelected(hit);
                 }
 
                 if (hit.collider.gameObject.transform.parent.tag == "Square")
                 {
+                    Debug.Log("4");
                     SquareSelected(hit);
                 }
 
