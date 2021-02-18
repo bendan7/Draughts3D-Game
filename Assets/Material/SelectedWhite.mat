@@ -111,7 +111,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BoxDims: {r: 5, g: 5, b: 5, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5803922, g: 0.62352943, b: 1, a: 1}
     - _Emission1: {r: 2.56, g: 0, b: 0, a: 1}
     - _Emission2: {r: 0, g: 1.95, b: 2.52, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
@@ -119,6 +119,6 @@ Material:
     - _FlowDirection1: {r: 0.05, g: 0, b: 0, a: 1}
     - _FlowDirection2: {r: 0, g: 0.05, b: 0, a: 1}
     - _MovementDirection: {r: 0, g: -1, b: 0, a: 1}
-    - _OutlineColor: {r: 0.46069548, g: 0.8509804, b: 0.12549017, a: 1}
+    - _OutlineColor: {r: 0.9492783, g: 0.990566, b: 0.54668033, a: 1}
     - _RingColor: {r: 1, g: 1, b: 1, a: 1}
     - _ScrollDirection: {r: 0, g: 0, b: 0, a: 0}

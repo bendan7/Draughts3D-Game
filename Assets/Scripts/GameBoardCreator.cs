@@ -12,8 +12,11 @@ public class GameBoardCreator : MonoBehaviour
     public GameObject Square;
     public GameObject GamePiecePrefab;
 
-    public Material BlackMat;
-    public Material WhiteMat;
+    public Material BoardBlack;
+    public Material BoardWhite;
+
+    public Material PieceBlack;
+    public Material PieceWhite;
 
     public Material SelectedBlack;
     public Material SelectedWhite;
@@ -24,7 +27,7 @@ public class GameBoardCreator : MonoBehaviour
 
     private void OnEnable()
     {
-        /*
+        
         var Board = GameObject.Find("Board");
         var GamePieces = GameObject.Find("GamePieces");
 
@@ -55,7 +58,7 @@ public class GameBoardCreator : MonoBehaviour
             }
         }
         
-        */
+        
     }
 
 
@@ -92,11 +95,11 @@ public class GameBoardCreator : MonoBehaviour
                 if (isBlackCell)
                 {
 
-                    square.GetComponentInChildren<MeshRenderer>().material = BlackMat;
+                    square.GetComponentInChildren<MeshRenderer>().material = BoardBlack;
                 }
                 else
                 {
-                    square.GetComponentInChildren<MeshRenderer>().material = WhiteMat;
+                    square.GetComponentInChildren<MeshRenderer>().material = BoardWhite;
                 }
 
 
@@ -131,7 +134,7 @@ public class GameBoardCreator : MonoBehaviour
 
         GamePiece.name = $"{j}:{i} - {color}";
         GamePiece.transform.position = new Vector3(i, 0, j);
-        GamePiece.GetComponentInChildren<MeshRenderer>().material = color == PlayerColor.White ? WhiteMat :BlackMat;
+        GamePiece.GetComponentInChildren<MeshRenderer>().material = color == PlayerColor.White ? PieceWhite : PieceBlack;
 
 
         var selectedMat = color == PlayerColor.White ? SelectedWhite : SelectedBlack;

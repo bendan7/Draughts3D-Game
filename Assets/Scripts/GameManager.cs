@@ -126,19 +126,17 @@ public class GameManager : MonoBehaviour
 
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            Debug.Log("1");
+
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log("2");
+
                 if (hit.collider.gameObject.transform.parent.tag == "GamePiece")
                 {
-                    Debug.Log("3");
                     GamePieceSelected(hit);
                 }
 
                 if (hit.collider.gameObject.transform.parent.tag == "Square")
                 {
-                    Debug.Log("4");
                     SquareSelected(hit);
                 }
 
