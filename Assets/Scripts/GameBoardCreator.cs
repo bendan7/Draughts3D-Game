@@ -9,8 +9,8 @@ using UnityEngine;
 public class GameBoardCreator : MonoBehaviour
 {
     public int BoardSize = 8;
-    public GameObject Square;
-    public GameObject GamePiecePrefab;
+    public GameObject SquarePrefab;
+    public GameObject PiecePrefab;
 
     public Material SquareBlack;
     public Material SquareWhite;
@@ -63,7 +63,7 @@ public class GameBoardCreator : MonoBehaviour
     }
 
 
-    public (Square[,], GamePiece[,]) BuildNewGameBoard() {
+    public (Square[,], Piece[,]) BuildNewGameBoard() {
 
         Debug.Log("New Game Board");
 
@@ -71,7 +71,7 @@ public class GameBoardCreator : MonoBehaviour
         _gamePieces = new GameObject("GamePieces");
 
         Square[,] boardArr = new Square[BoardSize, BoardSize];
-        GamePiece[,] gamePiecesArr = new GamePiece[BoardSize, BoardSize];
+        Piece[,] gamePiecesArr = new Piece[BoardSize, BoardSize];
 
 
         bool isBlackCell = false;
@@ -112,7 +112,7 @@ public class GameBoardCreator : MonoBehaviour
     private Square InstantiateSquare(int i, int j , Color color)
     {
 
-        var square = Instantiate(Square, _board.transform);
+        var square = Instantiate(SquarePrefab, _board.transform);
 
         square.name = $"{i}:{j}";
         square.transform.position = new Vector3(j, 0, i);
@@ -136,10 +136,10 @@ public class GameBoardCreator : MonoBehaviour
         
     }
 
-    private GamePiece InstantiateGamePiece(PlayerColor color, int i, int j)
+    private Piece InstantiateGamePiece(PlayerColor color, int i, int j)
     {
 
-        var GamePiece = Instantiate(GamePiecePrefab, _gamePieces.transform);
+        var GamePiece = Instantiate(PiecePrefab, _gamePieces.transform);
 
         GamePiece.name = $"{j}:{i} - {color}";
         GamePiece.transform.position = new Vector3(i, 0, j);
@@ -147,7 +147,7 @@ public class GameBoardCreator : MonoBehaviour
 
 
         var selectedMat = color == PlayerColor.White ? SelectedPieceWhite : SelectedPieceBlack;
-        var GamePieceScript = GamePiece.GetComponent<GamePiece>();
+        var GamePieceScript = GamePiece.GetComponent<Piece>();
 
         GamePieceScript.SelectedMaterial = selectedMat;
         GamePieceScript.Eatable = EatablePiece;

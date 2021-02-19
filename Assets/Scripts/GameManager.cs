@@ -3,119 +3,45 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Linq;
 
 [RequireComponent(typeof(GameBoardCreator))]
-public class GameManager : MonoBehaviour
+public partial class GameManager : MonoBehaviour
 {
 
     private GameBoardCreator _boardBuilder;
 
     private Square[,] _board;
-    private GamePiece[,] _gamePieces;
+    private Piece[,] _pieces;
+    private int _boardSize;
 
-    private GamePiece _selectedGP = null;
+    private GameState _gameState = GameState.WaitForAction;
 
-    private List<Square> _moveableSquares = new List<Square>();
-    private List<GamePiece> _eatablePieces = new List<GamePiece>();
+    private Piece _selectedPiece = null;
+    private List<Path> _moveablePaths = new List<Path>();
+    private PlayerColor _activePlayer = PlayerColor.White;
 
-    PlayerColor _activePlayer = PlayerColor.White;
-    GameState _gameState = GameState.WaitForAction;
+    private List<Piece> _opponentPieces = new List<Piece>();
 
     private void Awake()
     {
         _boardBuilder = GetComponent<GameBoardCreator>();
-        (_board, _gamePieces) = _boardBuilder.BuildNewGameBoard();
+        (_board, _pieces) = _boardBuilder.BuildNewGameBoard();
+        _boardSize = _boardBuilder.BoardSize;
+
+
+        foreach (var piece in _pieces)
+        {
+            if (piece != null && piece.Color == PlayerColor.Black)
+            {
+                _opponentPieces.Add(piece);
+            }
+        }
     }
 
     private void Start()
     {
-        
-        //Demo Moves
-        /*
-        _ = MoveGamePieceToSquareAsync(_gamePieces[5, 1], _board[4, 2]);
-        _ = MoveGamePieceToSquareAsync(_gamePieces[5, 5], _board[4, 4]);
-
-        _ = MoveGamePieceToSquareAsync(_gamePieces[2, 2], _board[3, 3]);
-        _ = MoveGamePieceToSquareAsync(_gamePieces[0, 0], _board[0, 0]);
-        */
-
-    }
-
-    private async Task MoveGamePieceToSquareAsync(GamePiece gamePiece, Square square)
-    {
-
-        _gameState = GameState.PiecesMoving;
-
-        var startPos = gamePiece.GetPostion();
-
-        GamePiece eatenPiece = TryGetEatenPiece(gamePiece, square);
-
-        Task move = gamePiece.MoveToPos(square.Col, square.Row);
-
-        if (eatenPiece)
-        {
-
-            _eatablePieces.Remove(eatenPiece);
-
-        }
-
-        // Update the new postion in the game pieces 2d array
-        _gamePieces[(int)startPos.x, (int)startPos.y] = null;
-        _gamePieces[square.Row, square.Col] = gamePiece;
-
-        GamePieceDeselect();
-
-        await move;
-
-        if (eatenPiece)
-        {
-            Debug.Log($"{eatenPiece.name} been eat");
-            Destroy(eatenPiece.gameObject);
-        }
-
-
-        NextPlayer();
-
-    }
-
-    private void NextPlayer()
-    {
-        _activePlayer = _activePlayer == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
-        
-
-        if(_activePlayer == PlayerColor.Black)
-        {
-            //AutoPlay();
-            _gameState = GameState.WaitForAction;
-        }
-        else
-        {
-            _gameState = GameState.WaitForAction;
-        }
- 
-    }
-
-    private GamePiece TryGetEatenPiece(GamePiece Eater, Square moveTo)
-    {
-
-        (var Add, var Sub , var GreaterThan) = GetSwapOperatorByColor(Eater.Color);
-
-        Debug.Log($"moveTo.Col  {moveTo.Col}");
-        Debug.Log($"Eater.Col + 1  {Eater.Col + 1}");
-
-        if (GreaterThan( moveTo.Col, Eater.Col + 1 ))
-        {
-            //Try eat right side from white perspective
-            return _gamePieces[Add(Eater.Row, 1), Add(Eater.Col, 1)];
-        }
-        else if (GreaterThan( Eater.Col - 1, moveTo.Col))
-        {
-
-            // Try eat left side from white perspective
-            return _gamePieces[Add(Eater.Row, 1), Sub(Eater.Col, 1)];
-        }
-
-        return null;
+        Debug.Log(_boardSize);
     }
 
     void Update()
@@ -132,12 +58,12 @@ public class GameManager : MonoBehaviour
 
                 if (hit.collider.gameObject.transform.parent.tag == "GamePiece")
                 {
-                    GamePieceSelected(hit);
+                    SelectePiece(hit);
                 }
 
                 if (hit.collider.gameObject.transform.parent.tag == "Square")
                 {
-                    SquareSelected(hit);
+                    SelecteSquare(hit);
                 }
 
             }
@@ -145,161 +71,349 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void SquareSelected(RaycastHit hit)
+    private void SelecteSquare(RaycastHit hit)
     {
+
         var selectedSquare = hit.transform.parent.GetComponent<Square>();
 
-        if (_moveableSquares.Contains(selectedSquare))
+        if (_moveablePaths == null)
+        {
+            return;
+        }
+
+        foreach (var path in _moveablePaths)
         {
 
-            Debug.Log($"Move GP {_selectedGP.name}  TO  {selectedSquare.Row}:{selectedSquare.Col}");   
-            _ = MoveGamePieceToSquareAsync(_selectedGP, selectedSquare);
+            var lastSqureInPath = path.moveableSquares[path.moveableSquares.Count - 1];
+            if (lastSqureInPath == selectedSquare)
+            {
+                _ = MovePieceInPath(_selectedPiece, path);
+                return;
+            }
 
         }
-        
+
     }
 
-    private void GamePieceSelected(RaycastHit hit)
+    private void SelectePiece(RaycastHit hit)
     {
 
-        GamePieceDeselect();
-
-        var newSelectedGamePiece = hit.transform.parent.GetComponent<GamePiece>();
+        var newSelectedGamePiece = hit.transform.parent.GetComponent<Piece>();
 
         if (newSelectedGamePiece.Color == _activePlayer)
         {
 
+            DeselectPiece();
+
+            _selectedPiece = newSelectedGamePiece;
+
+            _selectedPiece.MarkAsSelected(true);
+
+            var paths = GetPaths(_selectedPiece.Color, _selectedPiece.GetPostion());
+
+            MarkPaths(paths);
+
+            Debug.Log($"{paths.Count} was founds");
+
+            _moveablePaths = paths;
+        }
+    }
+
+    private void DeselectPiece()
+    {
+
+        if (_selectedPiece == null)
+        {
+            return;
+        }
+
+        _selectedPiece.MarkAsSelected(false);
+
+        foreach (var path in _moveablePaths)
+        {
+            foreach (Square optinalMoves in path.moveableSquares)
+            {
+                optinalMoves.SetAsOptionalMove(false);
+            }
+
+            foreach (Piece pieces in path.eatablePieces)
+            {
+                if (pieces?.gameObject != null)
+                {
+                    pieces.SetAsEatable(false);
+                }
+
+            }
+        }
+
+        _moveablePaths = null;
+        _selectedPiece = null;
+
+    }
+
+    private async Task MovePieceInPath(Piece gamePiece, Path path)
+    {
+        _gameState = GameState.PiecesMoving;
+
+        List<Piece> eaten = new List<Piece>();
+
+        foreach (var square in path.moveableSquares)
+        {
             
-            _selectedGP = newSelectedGamePiece;
-            (int row, int col) = _selectedGP.Select();
-
-            (_moveableSquares,_eatablePieces) = GetPossibleMoves(_selectedGP);
+            if (TryGetEatenPiece(gamePiece, square , out Piece eatenPiece))
+            {
+                eaten.Add(eatenPiece);
+            }
             
-
-            MarkSquares(_moveableSquares);
-            MarkEatablePieces(_eatablePieces);
-
+            await MoveGamePiece(gamePiece, square);
         }
+
+        foreach (var piece in eaten)
+        {
+            RemovePieceFromBoard(piece);
+        }
+
+        if(IsWinPath(path) == false)
+        {
+            NextPlayer();
+        }
+        else
+        {
+            Debug.Log(gamePiece.Color + " WINNNNNN");
+            //ACT 
+        }
+        
+        
     }
 
-    private (List<Square>,List<GamePiece>) GetPossibleMoves(GamePiece selectedGP)
+    private bool IsWinPath(Path path)
     {
-        int boardSize = _boardBuilder.BoardSize;
-        int col = selectedGP.Col;
-        int row = selectedGP.Row;
-
-        List<Square> moveableSquares = new List<Square>();
-        List<GamePiece> eatablePieces = new List<GamePiece>();
-
-        (var Add, var Sub, var GreaterThan) = GetSwapOperatorByColor(selectedGP.Color);
-
-
-
-        //Right - move right from the white perspective
-        if (Add(col, 1) < boardSize && Add(col, 1) >= 0 &&
-            _gamePieces[Add(row, 1), Add(col, 1)] == null)
+        var lastSquareInPath = path.moveableSquares[path.moveableSquares.Count - 1];
+        if (lastSquareInPath.Row == 0 || lastSquareInPath.Row == _boardSize-1)
         {
-
-            moveableSquares.Add(_board[Add(row, 1), Add(col, 1)]);
-        }
-        else if (
-                Add(col, 2) < boardSize && Add(col, 2) >= 0 &&
-                _gamePieces[Add(row, 2), Add(col, 2)] == null &&
-                _gamePieces[Add(row, 1), Add(col, 1)].Color != selectedGP.Color)
-        {
-
-            eatablePieces.Add(_gamePieces[Add(row, 1), Add(col, 1)]);
-            moveableSquares.Add(_board[Add(row, 2), Add(col, 2)]);
+            return true;
         }
 
-
-        //Left - move left from the white perspective
-        if (Sub(col, 1) >= 0 &&
-            Sub(col, 1) < boardSize &&
-            _gamePieces[Add(row, 1), Sub(col, 1)] == null)
-        {
-
-            moveableSquares.Add(_board[Add(row, 1), Sub(col, 1)]);
-        }
-
-        else if (
-            Sub(col, 2) >= 0 && Sub(col, 2) < boardSize &&
-            _gamePieces[Add(row, 2), Sub(col, 2)] == null &&
-            _gamePieces[Add(row, 1), Sub(col, 1)].Color != selectedGP.Color)
-        {
-
-            moveableSquares.Add(_board[Add(row, 2), Sub(col, 2)]);
-            eatablePieces.Add(_gamePieces[Add(row, 1), Sub(col, 1)]);
-        }
-  
-
-        return (moveableSquares,eatablePieces);
+        return false;
     }
 
-    private void MarkEatablePieces(List<GamePiece> eatablePieces)
+    private void RemovePieceFromBoard(Piece eatenPiece)
     {
-        foreach (var pieces in eatablePieces)
-        {
-            pieces.SetAsEatable(true);
-        }
+        Debug.Log($"{eatenPiece.name} been eat");
+
+        _pieces[eatenPiece.Row, eatenPiece.Col] = null;
+        _opponentPieces.Remove(eatenPiece);
+
+        Destroy(eatenPiece.gameObject);
     }
 
-    private void MarkSquares(List<Square> moveableSquares)
+    private void NextPlayer()
     {
-        foreach (var moveable in moveableSquares)
+
+        _activePlayer = _activePlayer == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
+
+        DeselectPiece();
+
+        if (_activePlayer == PlayerColor.Black)
         {
-            moveable.SetAsOptionalMove(true);
+            
+            _ = AutoOpponentAsync();
+            
         }
+        else
+        {
+            _gameState = GameState.WaitForAction;
+        }
+ 
     }
 
-    private void GamePieceDeselect()
+    private async Task AutoOpponentAsync()
+    {
+
+        Piece selectedPiece = null;
+        Path bestPath= null;
+
+        bool isFirst = true;
+
+        var rand = UnityEngine.Random.Range(0, _opponentPieces.Count);
+
+        for(int i =0; i < _opponentPieces.Count; i ++)
+        {
+            var randIndex = (i + rand) % _opponentPieces.Count;
+            var piece = _opponentPieces[randIndex];
+
+            var paths = GetPaths(piece.Color, piece.GetPostion());
+            foreach(var path in paths)
+            {
+                if (isFirst)
+                {
+                    selectedPiece = piece;
+                    bestPath = path;
+                    isFirst = false;
+                }
+
+                if (IsWinPath(path))
+                {
+                    selectedPiece = piece;
+                    bestPath = path;
+                    break;
+                }
+
+                if(path.eatablePieces.Count > bestPath.eatablePieces.Count)
+                {
+
+                    selectedPiece = piece;
+                    bestPath = path;
+                }
+            }
+        }
+
+        await MovePieceInPath(selectedPiece, bestPath);
+
+    }
+
+    private bool TryGetEatenPiece(Piece Eater, Square moveTo, out Piece eatenPiece)
+    {
+
+        (var Add, var Sub , var GreaterThan) = GetSwapOperatorByColor(Eater.Color);
+
+        if (GreaterThan( moveTo.Col, Eater.Col + 1 ))
+        {
+            //Try eat right side from white perspective
+
+            eatenPiece = _pieces[Add(Eater.Row, 1), Add(Eater.Col, 1)];
+            return eatenPiece != null;
+        }
+        else if (GreaterThan( Eater.Col - 1, moveTo.Col))
+        {
+
+            // Try eat left side from white perspective
+            eatenPiece = _pieces[Add(Eater.Row, 1), Sub(Eater.Col, 1)];
+            return eatenPiece != null;
+        }
+
+        eatenPiece = null;
+        return false;
+    }
+
+    private void MarkPaths(List<Path> paths)
+    {
+        foreach(var path in paths)
+        {
+            foreach (var moveable in path.moveableSquares)
+            {
+                moveable.SetAsOptionalMove(true);
+            }
+
+            foreach (var pieces in path.eatablePieces)
+            {
+                pieces?.SetAsEatable(true);
+            }
+        }
+
+    }
+
+    /// <returns>Return list of all possible paths to move </returns>
+    private List<Path> GetPaths(PlayerColor playerColor,
+                                Vector2 fromPos,
+                                Path previousPath = null,
+                                List<Path> allPaths = null)
     {
  
-        _selectedGP?.Deselect();
+        allPaths = allPaths == null ? new List<Path>() : allPaths;
 
-        foreach (Square optinalMoves in _moveableSquares)
+        int col = (int)fromPos.y;
+        int row = (int)fromPos.x;
+
+        // Same logic for both side by swapping the operators
+        (var Add, var Sub, var GreaterThan) = GetSwapOperatorByColor(playerColor);
+
+
+        // Right Side
+        if (IsPosInBoard(Add, col, 1) && IsPosInBoard(Add, row, 1))
         {
-            optinalMoves.SetAsOptionalMove(false);
+            var rightPath = previousPath == null ? new Path() : new Path(previousPath);
+
+            // Just Move
+            if (_pieces[Add(row, 1), Add(col, 1)] == null && previousPath == null)
+            {
+                rightPath.moveableSquares.Add(_board[Add(row, 1), Add(col, 1)]);
+                allPaths.Add(rightPath);
+            }
+
+            // Eat opponent
+            else
+            if (IsPosInBoard(Add, col, 2) &&
+                IsPosInBoard(Add, row, 2) &&
+                _pieces[Add(row, 2), Add(col, 2)] == null &&
+                _pieces[Add(row, 1), Add(col, 1)] != null &&
+                _pieces[Add(row, 1), Add(col, 1)].Color != playerColor)
+            {
+
+                rightPath.eatablePieces.Add(_pieces[Add(row, 1), Add(col, 1)]);
+                rightPath.moveableSquares.Add(_board[Add(row, 2), Add(col, 2)]);
+                allPaths.Add(rightPath);
+
+                GetPaths(playerColor, new Vector2(Add(row, 2), Add(col, 2)) , rightPath, allPaths);;
+            }
+
+                
         }
 
-        foreach (GamePiece pieces in _eatablePieces)
+
+        // Left Side
+        if (IsPosInBoard(Sub, col, 1) && IsPosInBoard(Add, row, 1))
         {
-            pieces.SetAsEatable(false);
+            var leftPath = previousPath == null ? new Path() : new Path(previousPath);
+
+            // Just Move
+            if (_pieces[Add(row, 1), Sub(col, 1)] == null && previousPath == null)
+            {
+                leftPath.moveableSquares.Add(_board[Add(row, 1), Sub(col, 1)]);
+                allPaths.Add(leftPath);    
+            }
+
+            // Eat opponent
+            else
+            if (IsPosInBoard(Sub,col,2) &&
+                IsPosInBoard(Add,row,2) &&
+                _pieces[Add(row, 2), Sub(col, 2)] == null &&
+                _pieces[Add(row, 1), Sub(col, 1)] != null && 
+                _pieces[Add(row, 1), Sub(col, 1)].Color != playerColor)
+            {
+
+                leftPath.eatablePieces.Add(_pieces[Add(row, 1), Sub(col, 1)]);
+                leftPath.moveableSquares.Add(_board[Add(row, 2), Sub(col, 2)]);
+                allPaths.Add(leftPath);
+
+                GetPaths(playerColor, new Vector2(Add(row, 2), Sub(col, 2)), leftPath, allPaths);
+            }
         }
+
+
+            return allPaths;
     }
 
-    private void AutoPlay()
+
+    private bool IsPosInBoard(Func<int, int, int> op, int a, int b)
     {
-        Debug.Log("Computer turn");
+       
 
-        /*
-        foreach (GamePiece piece in _opponentPieces)
-        {
+        return op(a, b) >= 0 && op(a, b) < _boardBuilder.BoardSize;
+    }
 
-            Square square = IsCanEat(piece);
+    private Task MoveGamePiece(Piece gamePiece , Square square)
+    {
 
-            if (square)
-            {
-                piece.Select();
-                _ = MoveGamePieceToSquareAsync(piece, square);
-                return;
-            }
-        }
+        var startPos = gamePiece.GetPostion();
 
-        foreach (GamePiece piece in _opponentPieces)
-        {
+        Task move = gamePiece.MoveToPos(square.Col, square.Row);
 
-            Square square = IsCanMove(piece);
+        // Update the new postion in the game pieces 2d array
+        _pieces[(int)startPos.x, (int)startPos.y] = null;
+        _pieces[square.Row, square.Col] = gamePiece;
 
-            if (square)
-            {
-                piece.Select();
-                _ = MoveGamePieceToSquareAsync(piece, square);
-                return;
-            }
-        }
-        */
-
+        return move;
     }
 
     private (Func<int, int, int>, Func<int, int, int>, Func<int, int, bool>)
@@ -325,6 +439,5 @@ public class GameManager : MonoBehaviour
 
         return (add,sub, GreaterThan);
     }
-
 }
 

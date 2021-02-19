@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,5 +33,8 @@ public class Square : MonoBehaviour
 
     }
 
-
+    internal Vector2 GetPostion()
+    {
+        return new Vector2(Row, Col);
+    }
 }

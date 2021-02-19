@@ -6,7 +6,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(GamePieceMover))]
 [RequireComponent(typeof(MeshRenderer))]
-public class GamePiece : MonoBehaviour
+public class Piece : MonoBehaviour
 {
     [HideInInspector]
     public PlayerColor Color;
@@ -40,19 +40,18 @@ public class GamePiece : MonoBehaviour
         return _gamePieceMover.MoveTo(col, row);
     }
 
-    public (int row, int col) Select()
+    public void MarkAsSelected(bool isSelected)
     {
+        if (isSelected)
+        {
+            _gamePieceMover.Pop();
+            _meshRenderer.material = SelectedMaterial;
+        }
+        else
+        {
+            _meshRenderer.material = _initMatrial;
+        }
 
-        _gamePieceMover.Pop();
-
-        _meshRenderer.material = SelectedMaterial;
-
-        return (Row, Col);
-    }
-
-    public void Deselect()
-    {
-        _meshRenderer.material = _initMatrial;
     }
 
     public void SetAsEatable(bool isEatable)
