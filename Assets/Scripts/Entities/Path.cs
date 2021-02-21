@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-public partial class GameManager
+public partial class BoardController
 {
     private class Path
     {

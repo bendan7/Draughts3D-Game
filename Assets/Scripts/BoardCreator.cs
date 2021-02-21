@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class GameBoardCreator : MonoBehaviour
+public class BoardCreator : MonoBehaviour
 {
     public int BoardSize = 8;
     public GameObject SquarePrefab;

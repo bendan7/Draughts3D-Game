@@ -1,4 +1,4 @@
-﻿public partial class GameManager
+﻿public partial class BoardController
 {
     private enum PathStartSide
     {
