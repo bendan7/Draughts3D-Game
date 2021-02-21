@@ -87,12 +87,12 @@ public class GameBoardCreator : MonoBehaviour
                 boardArr[i,j] = InstantiateSquare(i,j, color);
 
 
-                if (i < 3 && isBlackCell)
+                if (i < (BoardSize-2)/2 && isBlackCell)
                 {
                     var gamePiece = InstantiateGamePiece(PlayerColor.White, j,i);
                     gamePiecesArr[i, j] = gamePiece;
                 }
-                else if (i > 4 && isBlackCell)
+                else if (i >= (BoardSize + 2) / 2 && isBlackCell)
                 {
                     var gamePiece = InstantiateGamePiece(PlayerColor.Black,  j,i);
                     gamePiecesArr[i, j] = gamePiece;
