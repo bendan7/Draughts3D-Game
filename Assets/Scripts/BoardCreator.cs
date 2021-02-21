@@ -28,7 +28,7 @@ public class BoardCreator : MonoBehaviour
 
     private void OnEnable()
     {
-        
+        /*
         var Board = GameObject.Find("Board");
         var GamePieces = GameObject.Find("GamePieces");
 
@@ -58,7 +58,7 @@ public class BoardCreator : MonoBehaviour
                 DestroyImmediate(GamePieces);
             }
         }
-        
+        */
         
     }
 

@@ -28,6 +28,7 @@ public partial class BoardController : MonoBehaviour
     {
         _gameManager = GetComponent<GameManager>();
         _boardBuilder = GetComponent<BoardCreator>();
+
         (_board, _pieces) = _boardBuilder.BuildNewGameBoard();
         _boardSize = _boardBuilder.BoardSize;
 
@@ -39,11 +40,6 @@ public partial class BoardController : MonoBehaviour
                 _opponentPieces.Add(piece);
             }
         }
-    }
-
-    private void Start()
-    {
-        Debug.Log(_boardSize);
     }
 
     void Update()
