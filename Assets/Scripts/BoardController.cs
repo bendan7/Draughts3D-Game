@@ -5,36 +5,36 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.Linq;
 
-[RequireComponent(typeof(BoardCreator))]
+
 
 public class BoardController : MonoBehaviour
 {
 
     public PlayerColor ActivePlayer = PlayerColor.White;
 
+    BoardState _boardState = BoardState.WaitForAction;
     GameManager _gameManager;
-    BoardCreator _boardBuilder;
 
-    Square[,] _board;
+    Square[,] _squares;
     Piece[,] _pieces;
     int _boardSize;
 
-    BoardState _boardState = BoardState.WaitForAction;
-
     Piece _selectedPiece = null;
     List<Path> _moveablePaths = new List<Path>();
-    
 
-    private List<Piece> _opponentPieces = new List<Piece>();
+    List<Piece> _opponentPieces = new List<Piece>();
 
-    private void Awake()
+    internal void Init(int boardSize, Square[,] squares, Piece[,] pieces)
     {
-        _gameManager = GetComponent<GameManager>();
-        _boardBuilder = GetComponent<BoardCreator>();
-
-        (_board, _pieces) = _boardBuilder.BuildNewGameBoard();
-        _boardSize = _boardBuilder.BoardSize;
-
+        _boardSize = boardSize;
+        _squares = squares;
+        _pieces = pieces;
+        _boardSize = boardSize;
+        _gameManager = FindObjectOfType<GameManager>();
+        if (_gameManager == null)
+        {
+            Debug.LogError("GameManager doesn't found");
+        }
 
         foreach (var piece in _pieces)
         {
@@ -210,15 +210,17 @@ public class BoardController : MonoBehaviour
     private void NextPlayer()
     {
 
+        
+        DeselectPiece();
+        
         ActivePlayer = ActivePlayer == PlayerColor.Black ? PlayerColor.White : PlayerColor.Black;
 
-        _gameManager.NextPlayer(ActivePlayer);
+        _gameManager.SetActivePlayer(ActivePlayer);
 
-        DeselectPiece();
 
         if (ActivePlayer == PlayerColor.Black)
         {
-            
+            Debug.Log("Auto Opponent Play");
             _ = AutoOpponentAsync();
             
         }
@@ -339,7 +341,7 @@ public class BoardController : MonoBehaviour
             // Just Move
             if (_pieces[Add(row, 1), Add(col, 1)] == null && previousPath == null)
             {
-                rightPath.moveableSquares.Add(_board[Add(row, 1), Add(col, 1)]);
+                rightPath.moveableSquares.Add(_squares[Add(row, 1), Add(col, 1)]);
                 allPaths.Add(rightPath);
             }
 
@@ -353,7 +355,7 @@ public class BoardController : MonoBehaviour
             {
 
                 rightPath.eatablePieces.Add(_pieces[Add(row, 1), Add(col, 1)]);
-                rightPath.moveableSquares.Add(_board[Add(row, 2), Add(col, 2)]);
+                rightPath.moveableSquares.Add(_squares[Add(row, 2), Add(col, 2)]);
                 allPaths.Add(rightPath);
 
                 GetPaths(playerColor, new Vector2(Add(row, 2), Add(col, 2)) , rightPath, allPaths);;
@@ -371,7 +373,7 @@ public class BoardController : MonoBehaviour
             // Just Move
             if (_pieces[Add(row, 1), Sub(col, 1)] == null && previousPath == null)
             {
-                leftPath.moveableSquares.Add(_board[Add(row, 1), Sub(col, 1)]);
+                leftPath.moveableSquares.Add(_squares[Add(row, 1), Sub(col, 1)]);
                 allPaths.Add(leftPath);    
             }
 
@@ -385,7 +387,7 @@ public class BoardController : MonoBehaviour
             {
 
                 leftPath.eatablePieces.Add(_pieces[Add(row, 1), Sub(col, 1)]);
-                leftPath.moveableSquares.Add(_board[Add(row, 2), Sub(col, 2)]);
+                leftPath.moveableSquares.Add(_squares[Add(row, 2), Sub(col, 2)]);
                 allPaths.Add(leftPath);
 
                 GetPaths(playerColor, new Vector2(Add(row, 2), Sub(col, 2)), leftPath, allPaths);
@@ -401,7 +403,7 @@ public class BoardController : MonoBehaviour
     {
        
 
-        return op(a, b) >= 0 && op(a, b) < _boardBuilder.BoardSize;
+        return op(a, b) >= 0 && op(a, b) < _boardSize;
     }
 
     private Task MoveGamePiece(Piece gamePiece , Square square)

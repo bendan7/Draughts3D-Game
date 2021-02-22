@@ -4,20 +4,34 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
 
-    private GameUI _GameUI;
+    private BoardCreator _boardCreator;
     private BoardController _boardController;
+    private GameUI _GameUI;
+    
 
-    void Start()
+    private void Awake()
     {
-        _boardController = FindObjectOfType<BoardController>();
-        _GameUI = FindObjectOfType<GameUI>();
-
-        _GameUI?.StartNewGame(_boardController.ActivePlayer);
+        StartNewGame();
     }
 
-    public void NextPlayer(PlayerColor activePlayer)
+    private void StartNewGame()
     {
-        _GameUI.UpdateActivePlayer(activePlayer);
+        _boardCreator = FindObjectOfType<BoardCreator>();
+        _boardController = _boardCreator.BuildNewGameBoard();
+
+        _GameUI = FindObjectOfType<GameUI>();
+        if(_GameUI == null)
+        {
+            Debug.LogWarning("GameUI doesn't found");
+        }
+
+        _GameUI?.SetActivePlayer(_boardController.ActivePlayer);
+        _GameUI?.StopwatchStart();
+    }
+
+    public void SetActivePlayer(PlayerColor activePlayer)
+    {
+        _GameUI?.SetActivePlayer(activePlayer);
     }
 
     public void ExitButtonClicked()
@@ -25,8 +39,4 @@ public class GameManager : MonoBehaviour
         Debug.Log("GameExit");
     }
 
-    void Update()
-    {
-
-    }
 }

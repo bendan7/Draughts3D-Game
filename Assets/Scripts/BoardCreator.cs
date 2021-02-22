@@ -22,7 +22,8 @@ public class BoardCreator : MonoBehaviour
     [SerializeField] private Material EatablePieceMat;
 
     private GameObject _board;
-    private GameObject _gamePieces;
+    private GameObject _squares;
+    private GameObject _pieces;
 
     private void OnEnable()
     {
@@ -60,15 +61,19 @@ public class BoardCreator : MonoBehaviour
         
     }
 
-    public (Square[,], Piece[,]) BuildNewGameBoard() {
+    public BoardController BuildNewGameBoard() {
 
         Debug.Log("New Board");
 
-        _board = new GameObject("Board");
-        _gamePieces = new GameObject("GamePieces");
+        _board = new GameObject("GameBoard");
+        _squares = new GameObject("Squares");
+        _pieces = new GameObject("Pieces");
 
-        Square[,] boardArr = new Square[BoardSize, BoardSize];
-        Piece[,] gamePiecesArr = new Piece[BoardSize, BoardSize];
+        _squares.transform.parent = _board.transform;
+        _pieces.transform.parent = _board.transform;
+
+        Square[,] squaresArr = new Square[BoardSize, BoardSize];
+        Piece[,] piecesArr = new Piece[BoardSize, BoardSize];
 
 
         bool isBlackCell = false;
@@ -80,18 +85,18 @@ public class BoardCreator : MonoBehaviour
             for (int col = 0; col < BoardSize; col++)
             {
                 Color color = isBlackCell ? Color.black : Color.white;
-                boardArr[row,col] = InstantiateSquare(row,col, color);
+                squaresArr[row,col] = InstantiateSquare(row,col, color);
 
 
                 if (row < (BoardSize-2)/2 && isBlackCell)
                 {
                     var gamePiece = InstantiateGamePiece(PlayerColor.White, row,col);
-                    gamePiecesArr[row, col] = gamePiece;
+                    piecesArr[row, col] = gamePiece;
                 }
                 else if (row >= (BoardSize + 2) / 2 && isBlackCell)
                 {
                     var gamePiece = InstantiateGamePiece(PlayerColor.Black,  row,col);
-                    gamePiecesArr[row, col] = gamePiece;
+                    piecesArr[row, col] = gamePiece;
                 }
 
                 isBlackCell = !isBlackCell;
@@ -99,16 +104,20 @@ public class BoardCreator : MonoBehaviour
         }
 
 
-        _board.transform.position =new  Vector3(0, -0.05f, 0);
+        _squares.transform.position =new  Vector3(0, -0.05f, 0);
 
         
-        return (boardArr, gamePiecesArr);
+        var controller = _board.AddComponent<BoardController>();
+
+        controller.Init(BoardSize, squaresArr, piecesArr);
+
+        return controller;
     }
 
     private Square InstantiateSquare( int row, int col , Color color)
     {
 
-        var square = Instantiate(SquarePrefab, _board.transform);
+        var square = Instantiate(SquarePrefab, _squares.transform);
         var squareScript = square.GetComponent<Square>();
         var squareMat = color == Color.black ? SquareBlack : SquareWhite;
 
@@ -121,7 +130,7 @@ public class BoardCreator : MonoBehaviour
     private Piece InstantiateGamePiece(PlayerColor color, int row, int col )
     {
 
-        var GamePiece = Instantiate(PiecePrefab, _gamePieces.transform);
+        var GamePiece = Instantiate(PiecePrefab, _pieces.transform);
 
         var material = color == PlayerColor.White ? PieceWhite : PieceBlack;
         var selectedMat = color == PlayerColor.White ? SelectedPieceWhite : SelectedPieceBlack;
