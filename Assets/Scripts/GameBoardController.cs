@@ -7,7 +7,7 @@ using System.Linq;
 
 
 
-public class BoardController : MonoBehaviour
+public class GameBoardController : MonoBehaviour
 {
 
     public PlayerColor ActivePlayer = PlayerColor.White;
@@ -15,17 +15,20 @@ public class BoardController : MonoBehaviour
     BoardState _boardState = BoardState.WaitForAction;
     GameManager _gameManager;
 
+    GameObject _board;
+    int _boardSize;
     Square[,] _squares;
     Piece[,] _pieces;
-    int _boardSize;
+    
 
     Piece _selectedPiece = null;
     List<Path> _moveablePaths = new List<Path>();
 
     List<Piece> _opponentPieces = new List<Piece>();
 
-    internal void Init(int boardSize, Square[,] squares, Piece[,] pieces)
+    internal void Init(GameObject board,int boardSize, Square[,] squares, Piece[,] pieces)
     {
+        _board = board;
         _boardSize = boardSize;
         _squares = squares;
         _pieces = pieces;
@@ -442,6 +445,11 @@ public class BoardController : MonoBehaviour
         }
 
         return (add,sub, GreaterThan);
+    }
+
+    private void OnDestroy()
+    {
+        Destroy(_board);
     }
 }
 

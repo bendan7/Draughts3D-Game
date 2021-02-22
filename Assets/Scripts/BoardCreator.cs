@@ -61,7 +61,7 @@ public class BoardCreator : MonoBehaviour
         
     }
 
-    public BoardController BuildNewGameBoard() {
+    public GameBoardController BuildNewGameBoard() {
 
         Debug.Log("New Board");
 
@@ -107,9 +107,9 @@ public class BoardCreator : MonoBehaviour
         _squares.transform.position =new  Vector3(0, -0.05f, 0);
 
         
-        var controller = _board.AddComponent<BoardController>();
+        var controller = _board.AddComponent<GameBoardController>();
 
-        controller.Init(BoardSize, squaresArr, piecesArr);
+        controller.Init(_board, BoardSize, squaresArr, piecesArr);
 
         return controller;
     }

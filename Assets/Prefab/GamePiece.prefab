@@ -171,4 +171,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   journeyTime: 1
-  speed: 2
+  speed: 1.2

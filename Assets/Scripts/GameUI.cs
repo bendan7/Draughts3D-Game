@@ -21,21 +21,12 @@ public class GameUI : MonoBehaviour
         PlayerText.text = activePlayer.ToString();
     }
 
-    public void StopwatchStart()
+    public void ClockStart()
     {
         _stopwatch = new Stopwatch();
         _isStopwatchActive = true;
         _stopwatch.Start();
-    }
-
-    void StopwatchStop()
-    {
-        _stopwatch.Stop();
-    }
-
-    void StopwatchReset()
-    {
-        _stopwatch.Reset();
+        UpdateStopwatchText(_stopwatch.Elapsed.Seconds);
     }
 
     void UpdateStopwatchText(int seconds)
