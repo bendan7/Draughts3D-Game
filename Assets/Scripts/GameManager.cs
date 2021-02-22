@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
         _GameUI?.SetActivePlayer(activePlayer);
     }
 
-    public void ExitButtonClicked()
+    public void GameExit()
     {
         Debug.Log("GameExit");
     }

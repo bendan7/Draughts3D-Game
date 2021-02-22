@@ -24,6 +24,7 @@ public class GameUI : MonoBehaviour
     public void StopwatchStart()
     {
         _stopwatch = new Stopwatch();
+        _isStopwatchActive = true;
         _stopwatch.Start();
     }
 
