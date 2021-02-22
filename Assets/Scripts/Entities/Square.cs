@@ -8,33 +8,48 @@ public class Square : MonoBehaviour
     public int Row;
     public int Col;
 
-    [HideInInspector]
-    public Material SelectedMaterial;
-
-    private Material _originalColor;
+    Material _selectedMaterial;
+    Material _color;
+    MeshRenderer _meshRenderer;
 
     private void Start()
     {
-        _originalColor = GetComponentInChildren<MeshRenderer>().material;
+        _color = GetComponentInChildren<MeshRenderer>().material;
         
     }
 
-
-    public void SetAsOptionalMove(bool isOptional)
+    internal void SetAsOptionalMove(bool isOptional)
     {
         if (isOptional)
         {
-            GetComponentInChildren<MeshRenderer>().material = SelectedMaterial;
+            _meshRenderer.material = _selectedMaterial;
         }
         else
         {
-            GetComponentInChildren<MeshRenderer>().material = _originalColor;
+            _meshRenderer.material = _color;
         }
-
     }
 
     internal Vector2 GetPostion()
     {
         return new Vector2(Row, Col);
+    }
+
+    internal void Init(int row, int col, Material squareMat, Material squareMoveableMat)
+    {
+
+        gameObject.name = $"{row}:{col}";
+        gameObject.transform.position = new Vector3(col, 0,row );
+
+        Row = row;
+        Col = col;
+        _selectedMaterial = squareMoveableMat;
+
+        _color = squareMat;
+
+        _meshRenderer = GetComponentInChildren<MeshRenderer>();
+        _meshRenderer.material = _color;
+
+
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-public enum GameState
+public enum BoardState
 {
     WaitForAction,
     PiecesMoving

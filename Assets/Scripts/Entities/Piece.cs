@@ -4,48 +4,41 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(typeof(GamePieceMover))]
+[RequireComponent(typeof(PieceMover))]
 [RequireComponent(typeof(MeshRenderer))]
 public class Piece : MonoBehaviour
 {
-    [HideInInspector]
+
     public PlayerColor Color;
-
-    [HideInInspector]
-    public Material SelectedMaterial;
-
-    [HideInInspector]
-    public Material Eatable;
-
     public int Row;
-
     public int Col;
 
-    private Material _initMatrial;
-    private MeshRenderer _meshRenderer;
-    private GamePieceMover _gamePieceMover;
+    Material _selectedMat;
+    Material _eatableMat;
+
+
+    Material _initMatrial;
+    MeshRenderer _meshRenderer;
+    PieceMover _gamePieceMover;
 
     void Awake()
-    {
-        _meshRenderer = GetComponentInChildren<MeshRenderer>();
-        _initMatrial = _meshRenderer.material;   
-        _gamePieceMover = GetComponent<GamePieceMover>();
-
+    { 
+        _gamePieceMover = GetComponent<PieceMover>();
     }
 
-    public Task MoveToPos(int col, int row)
+    internal Task MoveToPos(int col, int row)
     {
-        Row = row;
-        Col = col;
+        this.Row = row;
+        this.Col = col;
         return _gamePieceMover.MoveTo(col, row);
     }
 
-    public void MarkAsSelected(bool isSelected)
+    internal void MarkAsSelected(bool isSelected)
     {
         if (isSelected)
         {
             _gamePieceMover.Pop();
-            _meshRenderer.material = SelectedMaterial;
+            _meshRenderer.material = _selectedMat;
         }
         else
         {
@@ -54,12 +47,12 @@ public class Piece : MonoBehaviour
 
     }
 
-    public void SetAsEatable(bool isEatable)
+    internal void SetAsEatable(bool isEatable)
     {
 
         if (isEatable)
         {
-            _meshRenderer.material = Eatable;
+            _meshRenderer.material = _eatableMat;
         }
         else
         {
@@ -67,9 +60,26 @@ public class Piece : MonoBehaviour
         }
     }
 
-    public Vector2 GetPostion()
+    internal Vector2 GetPostion()
     {
         return new Vector2(Row, Col);
     }
 
+    internal void Init(int row, int col, PlayerColor color, Material material, Material selectedMat, Material eatablePiece)
+    {
+        Row = row;
+        Col = col;
+        Color = color;
+        _selectedMat = selectedMat;
+        _eatableMat = eatablePiece;
+
+
+        gameObject.name = $"{row}:{col} - {color}";
+        gameObject.transform.position = new Vector3(col, 0, row);
+        _meshRenderer = GetComponentInChildren<MeshRenderer>();
+        _meshRenderer.material = material;
+        _initMatrial = material;
+
+        gameObject.SetActive(true);
+    }
 }

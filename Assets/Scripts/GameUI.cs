@@ -5,7 +5,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-public class GameUIController : MonoBehaviour
+public class GameUI : MonoBehaviour
 {
 
     public TMPro.TextMeshProUGUI clock;

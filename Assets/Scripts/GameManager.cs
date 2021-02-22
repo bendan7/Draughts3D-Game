@@ -4,19 +4,20 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
 
-    public GameUIController gameUIController;
-    public PlayerColor ActivePlayer = PlayerColor.White;
+    private GameUI _GameUI;
+    private BoardController _boardController;
 
     void Start()
     {
-        gameUIController?.StartNewGame(ActivePlayer);
+        _boardController = FindObjectOfType<BoardController>();
+        _GameUI = FindObjectOfType<GameUI>();
+
+        _GameUI?.StartNewGame(_boardController.ActivePlayer);
     }
 
-    public PlayerColor NextPlayer()
+    public void NextPlayer(PlayerColor activePlayer)
     {
-        ActivePlayer = ActivePlayer == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
-        gameUIController?.UpdateActivePlayer(ActivePlayer);
-        return ActivePlayer;
+        _GameUI.UpdateActivePlayer(activePlayer);
     }
 
     public void ExitButtonClicked()

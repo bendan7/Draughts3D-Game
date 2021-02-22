@@ -1,9 +1,8 @@
-﻿public partial class BoardController
+﻿
+public enum PathStartDirection
 {
-    private enum PathStartSide
-    {
-        Left,
-        Right
-    }
+    Left,
+    Right
 }
+
 

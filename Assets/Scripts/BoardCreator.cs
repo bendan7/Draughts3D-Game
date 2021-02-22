@@ -9,19 +9,17 @@ using UnityEngine;
 public class BoardCreator : MonoBehaviour
 {
     public int BoardSize = 8;
-    public GameObject SquarePrefab;
-    public GameObject PiecePrefab;
 
-    public Material SquareBlack;
-    public Material SquareWhite;
-    public Material SquareMoveable;
-
-    public Material PieceBlack;
-    public Material PieceWhite;
-
-    public Material SelectedPieceBlack;
-    public Material SelectedPieceWhite;
-    public Material EatablePiece;
+    [SerializeField] private GameObject SquarePrefab;
+    [SerializeField] private GameObject PiecePrefab;
+    [SerializeField] private Material SquareBlack;
+    [SerializeField] private Material SquareWhite;
+    [SerializeField] private Material SquareMoveableMat;
+    [SerializeField] private Material PieceBlack;
+    [SerializeField] private Material PieceWhite;
+    [SerializeField] private Material SelectedPieceBlack;
+    [SerializeField] private Material SelectedPieceWhite;
+    [SerializeField] private Material EatablePieceMat;
 
     private GameObject _board;
     private GameObject _gamePieces;
@@ -62,10 +60,9 @@ public class BoardCreator : MonoBehaviour
         
     }
 
-
     public (Square[,], Piece[,]) BuildNewGameBoard() {
 
-        Debug.Log("New Game Board");
+        Debug.Log("New Board");
 
         _board = new GameObject("Board");
         _gamePieces = new GameObject("GamePieces");
@@ -76,26 +73,25 @@ public class BoardCreator : MonoBehaviour
 
         bool isBlackCell = false;
 
-        for (int i = 0; i < BoardSize; i++)
+        for (int row = 0; row < BoardSize; row++)
         {
             isBlackCell = !isBlackCell;
 
-            for (int j = 0; j < BoardSize; j++)
+            for (int col = 0; col < BoardSize; col++)
             {
-
                 Color color = isBlackCell ? Color.black : Color.white;
-                boardArr[i,j] = InstantiateSquare(i,j, color);
+                boardArr[row,col] = InstantiateSquare(row,col, color);
 
 
-                if (i < (BoardSize-2)/2 && isBlackCell)
+                if (row < (BoardSize-2)/2 && isBlackCell)
                 {
-                    var gamePiece = InstantiateGamePiece(PlayerColor.White, j,i);
-                    gamePiecesArr[i, j] = gamePiece;
+                    var gamePiece = InstantiateGamePiece(PlayerColor.White, row,col);
+                    gamePiecesArr[row, col] = gamePiece;
                 }
-                else if (i >= (BoardSize + 2) / 2 && isBlackCell)
+                else if (row >= (BoardSize + 2) / 2 && isBlackCell)
                 {
-                    var gamePiece = InstantiateGamePiece(PlayerColor.Black,  j,i);
-                    gamePiecesArr[i, j] = gamePiece;
+                    var gamePiece = InstantiateGamePiece(PlayerColor.Black,  row,col);
+                    gamePiecesArr[row, col] = gamePiece;
                 }
 
                 isBlackCell = !isBlackCell;
@@ -109,55 +105,30 @@ public class BoardCreator : MonoBehaviour
         return (boardArr, gamePiecesArr);
     }
 
-    private Square InstantiateSquare(int i, int j , Color color)
+    private Square InstantiateSquare( int row, int col , Color color)
     {
 
         var square = Instantiate(SquarePrefab, _board.transform);
-
-        square.name = $"{i}:{j}";
-        square.transform.position = new Vector3(j, 0, i);
-
         var squareScript = square.GetComponent<Square>();
-        squareScript.Row = i;
-        squareScript.Col = j;
-        squareScript.SelectedMaterial = SquareMoveable;
-        
+        var squareMat = color == Color.black ? SquareBlack : SquareWhite;
 
-        if (color == Color.black)
-        {
-            square.GetComponentInChildren<MeshRenderer>().material = SquareBlack;
-        }
-        else
-        {
-            square.GetComponentInChildren<MeshRenderer>().material = SquareWhite;
-        }
+        squareScript.Init(row, col, squareMat, SquareMoveableMat);
 
         return squareScript;
         
     }
 
-    private Piece InstantiateGamePiece(PlayerColor color, int i, int j)
+    private Piece InstantiateGamePiece(PlayerColor color, int row, int col )
     {
 
         var GamePiece = Instantiate(PiecePrefab, _gamePieces.transform);
 
-        GamePiece.name = $"{j}:{i} - {color}";
-        GamePiece.transform.position = new Vector3(i, 0, j);
-        GamePiece.GetComponentInChildren<MeshRenderer>().material = color == PlayerColor.White ? PieceWhite : PieceBlack;
-
-
+        var material = color == PlayerColor.White ? PieceWhite : PieceBlack;
         var selectedMat = color == PlayerColor.White ? SelectedPieceWhite : SelectedPieceBlack;
-        var GamePieceScript = GamePiece.GetComponent<Piece>();
+        var PieceScript = GamePiece.GetComponent<Piece>();
 
-        GamePieceScript.SelectedMaterial = selectedMat;
-        GamePieceScript.Eatable = EatablePiece;
-        GamePieceScript.Color = color;
+        PieceScript.Init(row,col, color, material, selectedMat, EatablePieceMat);
 
-        GamePieceScript.Row = j;
-        GamePieceScript.Col = i;
-
-        GamePiece.SetActive(true);
-
-        return GamePieceScript;
+        return PieceScript;
     }
 }

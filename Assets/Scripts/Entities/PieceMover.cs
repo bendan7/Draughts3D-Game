@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(Animation))]
-public class GamePieceMover : MonoBehaviour
+public class PieceMover : MonoBehaviour
 {
-    public float journeyTime = 1f;
-    public float speed = 2f;
+    [SerializeField] private float journeyTime = 1f;
+    [SerializeField] private float speed = 2f;
 
     float _startTime;
     Vector3 _startPos;
@@ -16,22 +16,25 @@ public class GamePieceMover : MonoBehaviour
     Vector3 centerPoint;
     Vector3 startRelCenter;
     Vector3 endRelCenter;
-
-    private Animation _popAnimation;
-    private bool _isMoving = false;
-    private TaskCompletionSource<object> _moving = null;
+    Animation _popAnimation;
+    bool _isMoving = false;
+    TaskCompletionSource<object> _moving = null;
 
     private void Awake()
     {
         _popAnimation = GetComponentInChildren<Animation>();
+        if(_popAnimation == null)
+        {
+            Debug.LogWarning("Animation doesn't found");
+        }
     }
 
     internal void Pop()
     {
-        _popAnimation.Play();
+        _popAnimation?.Play();
     }
 
-    public Task MoveTo(int x, int z)
+    internal Task MoveTo(int x, int z)
     {
         _startPos = transform.position;
         _endPos = new Vector3(x, 0, z);
@@ -60,7 +63,7 @@ public class GamePieceMover : MonoBehaviour
         }
     }
 
-    public void GetCenter(Vector3 direction)
+    void GetCenter(Vector3 direction)
     {
         centerPoint = (_startPos + _endPos) * .5f;
         centerPoint -= direction;

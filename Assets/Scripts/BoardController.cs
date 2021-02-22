@@ -6,20 +6,23 @@ using UnityEngine;
 using System.Linq;
 
 [RequireComponent(typeof(BoardCreator))]
-public partial class BoardController : MonoBehaviour
+
+public class BoardController : MonoBehaviour
 {
 
-    private GameManager _gameManager;
-    private BoardCreator _boardBuilder;
+    public PlayerColor ActivePlayer = PlayerColor.White;
 
-    private Square[,] _board;
-    private Piece[,] _pieces;
-    private int _boardSize;
+    GameManager _gameManager;
+    BoardCreator _boardBuilder;
 
-    private GameState _gameState = GameState.WaitForAction;
+    Square[,] _board;
+    Piece[,] _pieces;
+    int _boardSize;
 
-    private Piece _selectedPiece = null;
-    private List<Path> _moveablePaths = new List<Path>();
+    BoardState _boardState = BoardState.WaitForAction;
+
+    Piece _selectedPiece = null;
+    List<Path> _moveablePaths = new List<Path>();
     
 
     private List<Piece> _opponentPieces = new List<Piece>();
@@ -45,7 +48,7 @@ public partial class BoardController : MonoBehaviour
     void Update()
     {
 
-        if (_gameState == GameState.WaitForAction && Input.GetButtonDown("Fire1"))
+        if (_boardState == BoardState.WaitForAction && Input.GetButtonDown("Fire1"))
         {
 
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -98,7 +101,7 @@ public partial class BoardController : MonoBehaviour
 
         var newSelectedGamePiece = hit.transform.parent.GetComponent<Piece>();
 
-        if (newSelectedGamePiece.Color == _gameManager.ActivePlayer)
+        if (newSelectedGamePiece.Color == ActivePlayer)
         {
 
             DeselectPiece();
@@ -110,8 +113,6 @@ public partial class BoardController : MonoBehaviour
             var paths = GetPaths(_selectedPiece.Color, _selectedPiece.GetPostion());
 
             MarkPaths(paths);
-
-            Debug.Log($"{paths.Count} was founds");
 
             _moveablePaths = paths;
         }
@@ -151,7 +152,7 @@ public partial class BoardController : MonoBehaviour
 
     private async Task MovePieceInPath(Piece gamePiece, Path path)
     {
-        _gameState = GameState.PiecesMoving;
+        _boardState = BoardState.PiecesMoving;
 
         List<Piece> eaten = new List<Piece>();
 
@@ -177,6 +178,7 @@ public partial class BoardController : MonoBehaviour
         }
         else
         {
+            DeselectPiece();
             Debug.Log(gamePiece.Color + " WINNNNNN");
             //ACT 
         }
@@ -208,12 +210,13 @@ public partial class BoardController : MonoBehaviour
     private void NextPlayer()
     {
 
-        
-        _gameManager.NextPlayer();
+        ActivePlayer = ActivePlayer == PlayerColor.Black ? PlayerColor.White : PlayerColor.Black;
+
+        _gameManager.NextPlayer(ActivePlayer);
 
         DeselectPiece();
 
-        if (_gameManager.ActivePlayer == PlayerColor.Black)
+        if (ActivePlayer == PlayerColor.Black)
         {
             
             _ = AutoOpponentAsync();
@@ -221,7 +224,7 @@ public partial class BoardController : MonoBehaviour
         }
         else
         {
-            _gameState = GameState.WaitForAction;
+            _boardState = BoardState.WaitForAction;
         }
  
     }
@@ -423,7 +426,7 @@ public partial class BoardController : MonoBehaviour
         Func<int, int, int> sub;
         Func<int, int, bool> GreaterThan;
 
-        if (_gameManager.ActivePlayer == PlayerColor.White)
+        if (ActivePlayer == PlayerColor.White)
         {
             add = (x, y) => { return x + y; };
             sub = (x, y) => { return x - y; };

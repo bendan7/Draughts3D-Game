@@ -156,8 +156,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Color: 0
-  SelectedMaterial: {fileID: 2100000, guid: 6854e580df809471f9043e1e710ed66f, type: 2}
-  Eatable: {fileID: 0}
   Row: 0
   Col: 0
 --- !u!114 &4630676819185059685
@@ -169,8 +167,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 6636323526216366341}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77f6b956322334855aec5d22a4d5f2f2, type: 3}
+  m_Script: {fileID: 11500000, guid: 41d8439eff8ae49fabd6c29288f93b7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   journeyTime: 1
-  speed: 1
+  speed: 2
