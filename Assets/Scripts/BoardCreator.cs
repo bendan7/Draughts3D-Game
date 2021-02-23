@@ -9,7 +9,9 @@ using UnityEngine;
 public class BoardCreator : MonoBehaviour
 {
     public int BoardSize = 8;
+    public PlayerColor StartPlayer = PlayerColor.White;
 
+#pragma warning disable 0649
     [SerializeField] private GameObject SquarePrefab;
     [SerializeField] private GameObject PiecePrefab;
     [SerializeField] private Material SquareBlack;
@@ -20,48 +22,13 @@ public class BoardCreator : MonoBehaviour
     [SerializeField] private Material SelectedPieceBlack;
     [SerializeField] private Material SelectedPieceWhite;
     [SerializeField] private Material EatablePieceMat;
+    #pragma warning restore 0649
 
     private GameObject _board;
     private GameObject _squares;
     private GameObject _pieces;
 
-    private void OnEnable()
-    {
-        /*
-        var Board = GameObject.Find("Board");
-        var GamePieces = GameObject.Find("GamePieces");
-
-        if (Board && GamePieces)
-        {
-            DestroyImmediate(Board);
-            DestroyImmediate(GamePieces);
-        }
-
-
-        if (!Application.isPlaying )
-        {
-            Debug.Log("editor mode");
-            BuildNewGameBoard();
-        }
-        else
-        {
-
-            Debug.Log("play mode");
-            Board = GameObject.Find("Board");
-            GamePieces = GameObject.Find("GamePieces");
-
-            
-            if (Board && GamePieces)
-            {
-                DestroyImmediate(Board);
-                DestroyImmediate(GamePieces);
-            }
-        }
-        */
-        
-    }
-
-    public GameBoardController BuildNewGameBoard() {
+    public GameLogic BuildNewGameBoard() {
 
         Debug.Log("New Board");
 
@@ -87,7 +54,6 @@ public class BoardCreator : MonoBehaviour
                 Color color = isBlackCell ? Color.black : Color.white;
                 squaresArr[row,col] = InstantiateSquare(row,col, color);
 
-
                 if (row < (BoardSize-2)/2 && isBlackCell)
                 {
                     var gamePiece = InstantiateGamePiece(PlayerColor.White, row,col);
@@ -106,12 +72,11 @@ public class BoardCreator : MonoBehaviour
 
         _squares.transform.position =new  Vector3(0, -0.05f, 0);
 
-        
         var controller = _board.AddComponent<GameBoardController>();
 
-        controller.Init(_board, BoardSize, squaresArr, piecesArr);
+        GameLogic gameLogic = controller.Init(_board, BoardSize, squaresArr, piecesArr, StartPlayer);
 
-        return controller;
+        return gameLogic;
     }
 
     private Square InstantiateSquare( int row, int col , Color color)
@@ -140,4 +105,5 @@ public class BoardCreator : MonoBehaviour
 
         return PieceScript;
     }
+
 }
