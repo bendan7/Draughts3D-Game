@@ -21,6 +21,7 @@ public class GameLogic
         _boardSize = boardSize;
         _useAutoOpponent = useAutoOpponent;
         ActivePlayer = StartPlayer;
+
     }
 
     /// <returns>Return list of all possible paths to move </returns>
@@ -314,10 +315,13 @@ public class GameLogic
         }
     }
 
-    async Task AutoOpponentAsync()
+    internal async Task AutoOpponentAsync()
     {
+        Debug.Log("AutoOpponentAsync");
 
         var opponentPieces = _bc.GetAllPieceInColor(PlayerColor.Black);
+
+        Debug.Log("A " + opponentPieces.Count);
 
         Piece selectedPiece = null;
         Path bestPath = null;

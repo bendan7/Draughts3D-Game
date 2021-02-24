@@ -34,6 +34,11 @@ public class GameBoardController : MonoBehaviour, BoardController
 
         _logic = new GameLogic(this, _gameManager, _boardSize, startColor, useAutoOpponent);
 
+        if (startColor == PlayerColor.Black && useAutoOpponent)
+        {
+           _= _logic.AutoOpponentAsync();
+        }
+
         return _logic;
     }
 
