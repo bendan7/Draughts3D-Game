@@ -63,6 +63,7 @@ public class BoardCreator : MonoBehaviour
                 else if (row >= (BoardSize + 2) / 2 && isBlackCell)
                 {
                     var gamePiece = InstantiateGamePiece(PlayerColor.Black,  row,col);
+
                     piecesArr[row, col] = gamePiece;
                 }
 

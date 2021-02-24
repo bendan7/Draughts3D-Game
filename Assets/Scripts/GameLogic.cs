@@ -331,7 +331,7 @@ public class GameLogic
             var randIndex = (i + rand) % opponentPieces.Count;
             var piece = opponentPieces[randIndex];
 
-            var paths = GetPaths(piece.Color, piece.GetPostion());
+            var paths = GetMoveablePaths(piece);
             foreach (var path in paths)
             {
                 if (isFirst)
