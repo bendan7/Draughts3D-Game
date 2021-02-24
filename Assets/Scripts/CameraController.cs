@@ -9,20 +9,38 @@ public class CameraController : MonoBehaviour
 
     const float MAX_DISTANCE = 179f;
     Camera _camera;
-    float _wantedFieldOfView;
+    const float _WantedFieldOfViewBoardSize8 = 54f;
+    const float _WantedFieldOfViewBoardSize10 = 60f;
+    const float _WantedFieldOfViewBoardSize12 = 65f;
+
+    float _wantedFieldOfView = 54f;
+
     bool _intro = false;
     bool _outro = false;
+
     TaskCompletionSource<object> _taskCompletionSource;
 
     private void Awake()
     {
         _camera = GetComponent<Camera>();
-        _wantedFieldOfView = _camera.fieldOfView;
         _camera.fieldOfView = MAX_DISTANCE;
     }
 
-    public Task PlayIntroEffect()
+    public Task PlayIntroEffect(int boardSize)
     {
+        if(boardSize == 8)
+        {
+            _wantedFieldOfView = _WantedFieldOfViewBoardSize8;
+        }
+        if(boardSize == 10)
+        {
+            _wantedFieldOfView = _WantedFieldOfViewBoardSize10;
+        }
+        if (boardSize == 12)
+        {
+            _wantedFieldOfView = _WantedFieldOfViewBoardSize12;
+        }
+
         _intro = true;
         _taskCompletionSource = new TaskCompletionSource<object>();
         return _taskCompletionSource.Task;

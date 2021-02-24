@@ -6,7 +6,8 @@ public class Path
     public List<Square> moveableSquares = new List<Square>();
     public List<Piece> eatablePieces = new List<Piece>();
 
-    public Path(Path previousPath =null)
+
+    public Path( Path previousPath =null)
     {
         if(previousPath != null)
         {
@@ -15,7 +16,10 @@ public class Path
 
         }
 
+
     }
+
+
 }
 
 

@@ -8,15 +8,16 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer))]
 public class Piece : MonoBehaviour
 {
+    public float heightIncAsKing = 2f;
 
+    // hide in the inspector
     public PlayerColor Color;
     public int Row;
     public int Col;
+    public bool IsSuperPiece = false;
 
     Material _selectedMat;
     Material _eatableMat;
-
-
     Material _initMatrial;
     MeshRenderer _meshRenderer;
     PieceMover _gamePieceMover;
@@ -60,9 +61,9 @@ public class Piece : MonoBehaviour
         }
     }
 
-    internal Vector2 GetPostion()
+    internal Vector2Int GetPostion()
     {
-        return new Vector2(Row, Col);
+        return new Vector2Int(Row, Col);
     }
 
     internal void Init(int row, int col, PlayerColor color, Material material, Material selectedMat, Material eatablePiece)
@@ -81,5 +82,19 @@ public class Piece : MonoBehaviour
         _initMatrial = material;
 
         gameObject.SetActive(true);
+    }
+
+    internal void UpgardeToSuperPiece()
+    {
+        
+        if(IsSuperPiece == false)
+        {
+            _gamePieceMover.Pop();
+            _gamePieceMover.Pop();
+            IsSuperPiece = true;
+            var scale = transform.localScale;
+            transform.localScale = new Vector3(scale.x, scale.y + heightIncAsKing, scale.z);
+        }
+
     }
 }
