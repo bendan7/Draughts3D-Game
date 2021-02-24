@@ -10,8 +10,9 @@ public class BoardCreator : MonoBehaviour
 {
     public int BoardSize = 8;
     public PlayerColor StartPlayer = PlayerColor.White;
+    public bool UseAutoOpponent = true;
 
-#pragma warning disable 0649
+    #pragma warning disable 0649
     [SerializeField] private GameObject SquarePrefab;
     [SerializeField] private GameObject PiecePrefab;
     [SerializeField] private Material SquareBlack;
@@ -74,7 +75,7 @@ public class BoardCreator : MonoBehaviour
 
         var controller = _board.AddComponent<GameBoardController>();
 
-        GameLogic gameLogic = controller.Init(_board, BoardSize, squaresArr, piecesArr, StartPlayer);
+        GameLogic gameLogic = controller.Init(_board, BoardSize, squaresArr, piecesArr, StartPlayer, UseAutoOpponent);
 
         return gameLogic;
     }

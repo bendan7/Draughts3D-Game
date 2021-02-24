@@ -12,12 +12,14 @@ public class GameLogic
     GameManager _gameManager;
     BoardController _bc;
     int _boardSize;
+    bool _useAutoOpponent= false;
 
-    public GameLogic(BoardController boardController, GameManager gameManager, int boardSize, PlayerColor StartPlayer)
+    public GameLogic(BoardController boardController, GameManager gameManager, int boardSize, PlayerColor StartPlayer, bool useAutoOpponent)
     {
         _gameManager = gameManager;
         _bc = boardController;
         _boardSize = boardSize;
+        _useAutoOpponent = useAutoOpponent;
         ActivePlayer = StartPlayer;
     }
 
@@ -317,8 +319,6 @@ public class GameLogic
 
         var opponentPieces = _bc.GetAllPieceInColor(PlayerColor.Black);
 
-
-
         Piece selectedPiece = null;
         Path bestPath = null;
 
@@ -341,16 +341,8 @@ public class GameLogic
                     isFirst = false;
                 }
 
-                if (IsWinPath(path))
-                {
-                    selectedPiece = piece;
-                    bestPath = path;
-                    break;
-                }
-
                 if (path.eatablePieces.Count > bestPath.eatablePieces.Count)
                 {
-
                     selectedPiece = piece;
                     bestPath = path;
                 }
@@ -367,17 +359,6 @@ public class GameLogic
 
         var opponentPieces = _bc.GetAllPieceInColor(opponentColor);
         if(opponentPieces.Count == 0)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    internal bool IsWinPath(Path path)
-    {
-        var lastSquareInPath = path.moveableSquares[path.moveableSquares.Count - 1];
-        if (lastSquareInPath.Row == 0 || lastSquareInPath.Row == _boardSize - 1)
         {
             return true;
         }
@@ -415,12 +396,10 @@ public class GameLogic
         _gameManager.SetActivePlayer(ActivePlayer);
 
 
-        if (ActivePlayer == PlayerColor.Black)
+        if (ActivePlayer == PlayerColor.Black && _useAutoOpponent)
         {
-            //Debug.Log("Auto Opponent Play");
-            //_ = AutoOpponentAsync();
-            BoardState = GameState.WaitForAction;
 
+            _ = AutoOpponentAsync();
         }
         else
         {

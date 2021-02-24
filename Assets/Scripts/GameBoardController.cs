@@ -18,7 +18,7 @@ public class GameBoardController : MonoBehaviour, BoardController
     List<Path> _moveablePaths = new List<Path>();
 
 
-    internal GameLogic Init(GameObject board,int boardSize, Square[,] squares, Piece[,] pieces, PlayerColor startColor)
+    internal GameLogic Init(GameObject board,int boardSize, Square[,] squares, Piece[,] pieces, PlayerColor startColor, bool useAutoOpponent)
     {
 
         _board = board;
@@ -32,7 +32,7 @@ public class GameBoardController : MonoBehaviour, BoardController
             Debug.LogError("GameManager doesn't found");
         }
 
-        _logic = new GameLogic(this, _gameManager, _boardSize, startColor);
+        _logic = new GameLogic(this, _gameManager, _boardSize, startColor, useAutoOpponent);
 
         return _logic;
     }
