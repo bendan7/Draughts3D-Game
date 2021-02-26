@@ -45,7 +45,7 @@ public class GameBoardController : MonoBehaviour, BoardController
     void Update()
     {
 
-        if (_logic?.BoardState == GameState.WaitForAction && Input.GetButtonDown("Fire1"))
+        if (_logic?.GameState == GameState.WaitForAction && Input.GetButtonDown("Fire1"))
         {
 
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -207,7 +207,7 @@ public class GameBoardController : MonoBehaviour, BoardController
 
     public async Task MovePieceInPath(Piece gamePiece, Path path)
     {
-        _logic.BoardState = GameState.PiecesMoving;
+        _logic.GameState = GameState.Noninteractive;
 
 
         foreach (var square in path.moveableSquares)

@@ -2,5 +2,5 @@
 public enum GameState
 {
     WaitForAction,
-    PiecesMoving
+    Noninteractive
 }

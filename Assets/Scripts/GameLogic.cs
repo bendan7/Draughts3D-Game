@@ -7,7 +7,7 @@ public class GameLogic
 {
 
     public PlayerColor ActivePlayer { get; set; } = PlayerColor.White;
-    public GameState BoardState { get; set; } = GameState.WaitForAction;
+    public GameState GameState { get; set; } = GameState.WaitForAction;
 
     GameManager _gameManager;
     BoardController _bc;
@@ -317,11 +317,9 @@ public class GameLogic
 
     internal async Task AutoOpponentAsync()
     {
-        Debug.Log("AutoOpponentAsync");
+        Debug.Log("Auto Opponent");
 
         var opponentPieces = _bc.GetAllPieceInColor(PlayerColor.Black);
-
-        Debug.Log("A " + opponentPieces.Count);
 
         Piece selectedPiece = null;
         Path bestPath = null;
@@ -336,6 +334,7 @@ public class GameLogic
             var piece = opponentPieces[randIndex];
 
             var paths = GetMoveablePaths(piece);
+
             foreach (var path in paths)
             {
                 if (isFirst)
@@ -350,8 +349,26 @@ public class GameLogic
                     selectedPiece = piece;
                     bestPath = path;
                 }
+
+                // If the path can make the piece SuperPiece
+                if (piece.IsSuperPiece == false && path.moveableSquares[path.moveableSquares.Count - 1].Row == _boardSize - 1)
+                {
+                    await _bc.MovePieceInPath(selectedPiece, bestPath);
+                    return;
+                }
+
             }
         }
+
+        // No moveable paths
+        if (selectedPiece == null || bestPath == null || bestPath.moveableSquares.Count == 0)
+        {
+            _gameManager.SetWinner(PlayerColor.White);
+            GameState = GameState.Noninteractive;
+
+            return;
+        }
+
 
         await _bc.MovePieceInPath(selectedPiece, bestPath);
 
@@ -407,7 +424,7 @@ public class GameLogic
         }
         else
         {
-            BoardState = GameState.WaitForAction;
+            GameState = GameState.WaitForAction;
         }
 
     }
